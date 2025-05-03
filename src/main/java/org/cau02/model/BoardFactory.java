@@ -9,18 +9,8 @@ class BoardFactory {
         return switch (boardAngle) {
             case 4 -> new SquareBoard();
             case 5 -> new PentagonBoard();
-            case 6 -> new HexagonBoard();
+            case 6 -> new HexagonBoard(); // 현재 x
             default -> throw new IllegalArgumentException("");
         };
-
-    }
-
-    private Board generateBoard(int boardAngle) throws IllegalArgumentException {
-        if (boardAngle < 3) {
-            throw new IllegalArgumentException("");
-        } else {
-
-        }
-        return null;
     }
 }

@@ -126,7 +126,6 @@ public class Piece {
 
         location = path.get(pathIndex);
         path = board.computeNextPath(path, location);
-        System.out.println(board.paths.indexOf(path));
         if (state == PieceState.READY) {
             state = PieceState.ACTIVE;
         }

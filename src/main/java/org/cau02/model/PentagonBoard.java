@@ -6,7 +6,6 @@ import java.util.HashMap;
 import java.util.List;
 
 public class PentagonBoard extends RegularBoard {
-    /*
     private static final int[][] PATHS_INDEXES = {
             { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 0 },
             { 0, 1, 2, 3, 4, 5, 25, 26, 35, 32, 31, 20, 21, 22, 23, 24, 0 },
@@ -15,14 +14,14 @@ public class PentagonBoard extends RegularBoard {
             { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 27, 28, 35, 34, 33, 0},
             { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 29, 30, 35, 34, 33, 0}
     };
-     */
 
     PentagonBoard() {
         super(5);
 
-        /*
-        spaces = new ArrayList<>(Collections.nCopies(35, new BoardSpace()));
-
+        spaces = new ArrayList<>(7 * boardAngle + 1);
+        for (int i = 0; i < 7 * boardAngle + 1; i++) {
+            spaces.add(new BoardSpace());
+        }
         paths = new ArrayList<>();
 
         for (int[] pathIndexes : PATHS_INDEXES) {
@@ -37,7 +36,6 @@ public class PentagonBoard extends RegularBoard {
         for (BoardSpace space : spaces) {
             pieceOnBoardMap.put(space, null);
         }
-         */
     }
 
     @Override

@@ -5,14 +5,12 @@ import java.util.HashMap;
 import java.util.List;
 
 public class SquareBoard extends RegularBoard {
-
     private static final int[][] PATHS_INDEXES = {
             { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 0 },
             { 0, 1, 2, 3, 4, 5, 20, 21, 28, 25, 24, 15, 16, 17, 18, 19, 0 },
             { 0, 1, 2, 3, 4, 5, 20, 21, 28, 27, 26, 0 },
             { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 22, 23, 28, 27, 26, 0 }
     };
-
 
     SquareBoard() {
         super(4);
