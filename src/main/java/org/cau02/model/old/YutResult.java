@@ -1,4 +1,4 @@
-package org.cau02.model;
+package org.cau02.model.old;
 
 /** 윷 던지기 결과 */
 public enum YutResult {

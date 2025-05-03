@@ -1,34 +1,71 @@
 package org.cau02.model;
 
-import org.cau02.model.interfaces.IBoardConfiguration;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 
-import java.util.*;
+enum MoveResult {
+    MOVE,
+    CARRY,
+    CATCH
+}
 
-/** 게임판 자체를 나타내는 클래스 */
-public class Board {
-    private List<PathNode> pathNodes;
-    private IBoardConfiguration config; // 인터페이스 타입 의존
-    private PathNode startNode; // 시작/도착 지점 (Node 0)
+public abstract class Board {
+    final BoardSpace readySpace = new BoardSpace();
+    final BoardSpace goalSpace = new BoardSpace();
+    List<BoardSpace> spaces = new ArrayList<>();
+    List<BoardPath> paths = new ArrayList<>();
+    HashMap<BoardSpace, Piece> pieceOnBoardMap = new HashMap<>();
 
-    public Board(IBoardConfiguration config) {
-        this.config = Objects.requireNonNull(config, "Board 설정 객체는 null일 수 없습니다.");
-        createBoardPath();
+    public BoardSpace getReadySpace() {
+        return readySpace;
     }
 
-    private void createBoardPath() {
-        this.pathNodes = config.generatePathLayout(); // 설정 객체에 경로 생성 위임
-        this.startNode = findNodeByPosition(0).orElseThrow(
-                () -> new IllegalStateException("Board 생성 실패: 시작 노드(0번)를 찾을 수 없습니다.")
-        );
+    public BoardSpace getGoalSpace() {
+        return goalSpace;
     }
 
-    /** 지정된 위치 번호로 노드를 찾습니다. */
-    public Optional<PathNode> findNodeByPosition(int position) {
-        return pathNodes.stream()
-                .filter(node -> node.getPosition() == position)
-                .findFirst();
+    public List<BoardSpace> getSpaces() {
+        return List.copyOf(spaces);
     }
 
-    public PathNode getStartNode() { return startNode; }
-    public List<PathNode> getPathNodes() { return Collections.unmodifiableList(pathNodes); }
+    public BoardPath getDefaultPath() {
+        return paths.getFirst();
+    }
+
+    Board() {}
+
+    abstract BoardPath computeNextPath(BoardPath path, BoardSpace space) throws IllegalArgumentException;
+
+    MoveResult setPieceOnBoardSpace(Piece piece, BoardSpace space) throws IllegalArgumentException {
+        if (!pieceOnBoardMap.containsKey(space)) {
+            throw new IllegalArgumentException();
+        }
+
+        for (BoardSpace s : pieceOnBoardMap.keySet()) {
+            if (pieceOnBoardMap.get(s) == piece) {
+                pieceOnBoardMap.put(s, null);
+            }
+        }
+
+        if (space == readySpace || space == goalSpace) {
+            return MoveResult.MOVE;
+        }
+
+        Piece oldPiece = pieceOnBoardMap.get(space);
+        if (oldPiece == null) {
+            pieceOnBoardMap.put(space, piece);
+            return MoveResult.MOVE;
+        } else {
+            if (oldPiece.getOwner() == piece.getOwner()) {
+                oldPiece.addCarry(piece);
+                return MoveResult.CARRY;
+            } else {
+                oldPiece.reset();
+                pieceOnBoardMap.put(space, piece);
+                return MoveResult.CATCH;
+            }
+        }
+    }
+
 }

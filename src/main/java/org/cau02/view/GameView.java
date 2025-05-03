@@ -1,9 +1,9 @@
 package org.cau02.view;
 
-import org.cau02.model.Board;
-import org.cau02.model.Move;
-import org.cau02.model.Player;
-import org.cau02.model.YutResult;
+import org.cau02.model.old.Board;
+import org.cau02.model.old.Move;
+import org.cau02.model.old.Player;
+import org.cau02.model.old.YutResult;
 
 import java.util.List;
 

@@ -1,7 +1,7 @@
 package org.cau02;
 
 import org.cau02.controller.GameController;
-import org.cau02.model.Game;
+import org.cau02.model.old.Game;
 import org.cau02.view.GameView;
 
 public class Main {

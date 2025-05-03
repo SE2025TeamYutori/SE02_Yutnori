@@ -1,4 +1,4 @@
-package org.cau02.model;
+package org.cau02.model.old;
 import java.util.*;
 
 /** 한 번의 말 이동 정보를 담는 객체 */

@@ -1,7 +1,7 @@
-package org.cau02.model;
+package org.cau02.model.old;
 
-import org.cau02.model.interfaces.IBoardConfiguration;
-import org.cau02.model.interfaces.YutStickBehavior;
+import org.cau02.model.old.interfaces.IBoardConfiguration;
+import org.cau02.model.old.interfaces.YutStickBehavior;
 import org.cau02.view.GameView;
 
 import java.util.*;

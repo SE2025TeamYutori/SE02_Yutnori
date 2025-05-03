@@ -1,4 +1,4 @@
-package org.cau02.model;
+package org.cau02.model.old;
 import org.cau02.view.GameView;
 
 import java.util.*;
