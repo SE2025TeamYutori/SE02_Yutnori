@@ -60,6 +60,7 @@ class View_test_cli implements YutNoriObserver {
         System.out.println("게임판 모양: " + ((RegularBoard) gm.getBoard()).getBoardAngle() + "각형");
         System.out.println("플레이어 수: " + gm.getPlayerCount() + "명");
         System.out.println("플레이어당 말 수 : " + gm.getPieceCount() + "개");
+        System.out.println("--------------------------------------------------------");
     }
 }
 
@@ -131,9 +132,18 @@ public class Controller_test_cli {
                             }
                             System.out.println();
 
-                            System.out.println("어떤 족보로 이동할까요: 1-도, 2-개, 3-걸, 4-윷, 5-모");
+                            System.out.println("어떤 족보로 이동할까요: 0 -빽도, 1-도, 2-개, 3-걸, 4-윷, 5-모");
+                            System.out.println("족보 별 남은 이동 횟수");
+                            for (Yut y : Yut.values()) {
+                                System.out.print("  " + y.name() + ": " + gm.getYutResult().get(y.ordinal()) + "회 ");
+                            }
+                            System.out.println();
                             int ny = sc.nextInt();
-                            gm.moveNewPiece(Yut.values()[ny]);
+                            try {
+                                gm.moveNewPiece(Yut.values()[ny]);
+                            } catch (IllegalStateException e) {
+                                System.out.println("해당 족보로 이동 불가능합니다.(" + e.getMessage() + ")");
+                            }
                         } else if (m == 1) {
                             List<Piece> ps = new ArrayList<>(gm.getActivePieces(gm.getCurrentPlayer()));
 
@@ -149,9 +159,18 @@ public class Controller_test_cli {
                             System.out.print("이동할 말의 번호를 선택하세요: ");
                             int pi = sc.nextInt();
                             System.out.println("어떤 족보로 이동할까요: 0-빽도, 1-도, 2-개, 3-걸, 4-윷, 5-모");
+                            System.out.println("족보 별 남은 이동 횟수");
+                            for (Yut y : Yut.values()) {
+                                System.out.print("  " + y.name() + ": " + gm.getYutResult().get(y.ordinal()) + "회 ");
+                            }
+                            System.out.println();
                             int py = sc.nextInt();
 
-                            gm.movePiece(ps.get(pi), Yut.values()[py]);
+                            try {
+                                gm.movePiece(ps.get(pi), Yut.values()[py]);
+                            } catch (IllegalStateException e) {
+                                System.out.println("해당 족보로 이동 불가능합니다.(" + e.getMessage() + ")");
+                            }
                         }
                 }
             }

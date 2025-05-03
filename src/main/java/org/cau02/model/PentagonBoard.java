@@ -1,10 +1,12 @@
 package org.cau02.model;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
+/**
+ * 오각형 모양 윷놀이 게임판입니다.
+ */
 public class PentagonBoard extends RegularBoard {
     private static final int[][] PATHS_INDEXES = {
             { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 0 },
@@ -18,6 +20,7 @@ public class PentagonBoard extends RegularBoard {
     PentagonBoard() {
         super(5);
 
+        // RegularBoard의 자동 생성 구현 완료하면 이하 삭제
         spaces = new ArrayList<>(7 * boardAngle + 1);
         for (int i = 0; i < 7 * boardAngle + 1; i++) {
             spaces.add(new BoardSpace());
@@ -38,10 +41,11 @@ public class PentagonBoard extends RegularBoard {
         }
     }
 
+    // RegularBoard의 메소드 구현 완료하면 이 메소드 구현 삭제
     @Override
     BoardPath computeNextPath(BoardPath path, BoardSpace space) throws IllegalArgumentException {
         if (!spaces.contains(space) || !paths.contains(path)) {
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException("경로나 칸이 게임판에 존재하지 않습니다.");
         }
 
         return switch (paths.indexOf(path)) {
@@ -73,7 +77,7 @@ public class PentagonBoard extends RegularBoard {
                 case 14 -> paths.get(0);
                 default -> path;
             };
-            default -> throw new IllegalArgumentException();
+            default -> throw new IllegalArgumentException(); //도달 불가
         };
     }
 }

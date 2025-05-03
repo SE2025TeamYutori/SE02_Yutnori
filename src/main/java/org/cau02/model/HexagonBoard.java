@@ -1,14 +1,21 @@
 package org.cau02.model;
 
+/**
+ * 육각형 모양 윷놀이 게임판입니다.
+ * 현재 구현 안됨. 사용 x
+ */
 public class HexagonBoard extends RegularBoard {
     HexagonBoard() {
         super(6);
+
+        // RegularBoard의 자동 생성 구현이 안되었으므로 정상적으로 안됨
     }
 
+    // RegularBoard의 메소드 구현 완료하면 이 메소드 구현 삭제
     @Override
     BoardPath computeNextPath(BoardPath path, BoardSpace space) throws IllegalArgumentException {
         if (!spaces.contains(space) || !paths.contains(path)) {
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException("경로나 칸이 게임판에 존재하지 않습니다.");
         }
 
         return switch (paths.indexOf(path)) {
@@ -50,7 +57,7 @@ public class HexagonBoard extends RegularBoard {
                 case 19 -> paths.get(0);
                 default -> path;
             };
-            default -> throw new IllegalArgumentException();
+            default -> throw new IllegalArgumentException(); //도달 불가
         };
     }
 }

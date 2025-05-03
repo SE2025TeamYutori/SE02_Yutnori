@@ -4,19 +4,28 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+/**
+ * 정다각형 모양 게임판을 나타내는 추상 클래스입니다.
+ */
 public abstract class RegularBoard extends Board {
-    protected final int boardAngle;
+    protected final int boardAngle; // n각형의 n
 
+    /**
+     * 게임판이 몇각형 모양인지 반환합니다.
+     * @return n각형의 n
+     */
     public int getBoardAngle() {
         return boardAngle;
     }
 
+    // 외부에서 생성 못하도록 한 장치.
     RegularBoard(int boardAngle) {
         this.boardAngle = boardAngle;
-        //generateBoard();
+        //generateBoard(); // 자동생성 구현 완료하면 사용
     }
 
-    //현재 버그남; 사용 x
+    // n에 따라 게임판을 자동으로 생성해주는 메소드
+    // 현재 버그남. 사용 x
     private void generateBoard() {
         spaces = new ArrayList<>(7 * boardAngle + 1);
         for (int i = 0; i < 7 * boardAngle + 1; i++) {
@@ -68,6 +77,8 @@ public abstract class RegularBoard extends Board {
         }
     }
 
+    // 어떤 모양에서도 적용 가능한 메소드로
+    // 현재 구현 안됨. 사용 x
     @Override
     BoardPath computeNextPath(BoardPath path, BoardSpace space) throws IllegalArgumentException {
         if (!spaces.contains(space) || !paths.contains(path)) {
