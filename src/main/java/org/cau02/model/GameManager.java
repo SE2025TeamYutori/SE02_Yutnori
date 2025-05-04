@@ -324,8 +324,9 @@ public class GameManager {
     }
 
     /**
-     * 현재 족보별 이동 가능 횟수를 바탕으로, 새 말이 이동 가능한 위치들을 List로 반환합니다.
-     * @return 새 말이 이동 가능한 위치들의 List
+     * 현재 족보별 이동 가능 횟수를 바탕으로, 새 말이 이동 가능한 위치들을 List로 반환합니다.+
+     * 리스트의 각 index는 Yut의 ordinal 입니다. (움직임 불가한 족보의 경우 null)
+     * @return 새 말이 이동 가능한 위치들의 List , 움직임 불가한 족보의 위치는 null
      * 출발 전 말이 없을 경우 null을 반환합니다.
      * @throws IllegalStateException 게임 상태가 {@link GameState#PLAYING}이 아닐 경우
      */
@@ -345,8 +346,9 @@ public class GameManager {
 
     /**
      * 현재 족보별 이동 가능 횟수를 바탕으로, 해당 말이 이동 가능한 위치들을 List로 반환합니다.
+     * 리스트의 각 index는 Yut의 ordinal 입니다. (움직임 불가한 족보의 경우 null)
      * @param piece 이동 가능 위치들을 확인할 말
-     * @return 해당 말이 이동 가능한 위치들의 List
+     * @return 해당 말이 이동 가능한 위치들의 List, 움직임 불가한 족보의 위치는 null
      * 출발 전 말이 없을 경우 null을 반환합니다.
      * @throws IllegalArgumentException 말의 상태가 {@link PieceState#GOAL}일 경우
      * @throws IllegalStateException 게임 상태가 {@link GameState#PLAYING}이 아닐 경우
@@ -356,18 +358,18 @@ public class GameManager {
             throw new IllegalStateException("게임 중에만 말을 이동할 수 있습니다.");
         }
 
-        List<BoardSpace> locations = new ArrayList<>();
+        BoardSpace[] locations = new BoardSpace[Yut.values().length];
         // 빽도는 ACTIVE 상태일때만 계산 가능
         if (piece.getState() == PieceState.ACTIVE && yutResult[0] > 0) {
-            locations.add(board.getPossibleLocation(piece, Yut.BACKDO));
+            locations[Yut.BACKDO.ordinal()] = board.getPossibleLocation(piece, Yut.BACKDO);
         }
         // 빽도 제외 족보별 확인
         for (int i = 1; i < yutResult.length; i++) {
             if (yutResult[i] > 0) {
-                locations.add(board.getPossibleLocation(piece, Yut.values()[i])); // 말의 상태가 GOAL일 경우 여기서 예외 발생
+                locations[i] = board.getPossibleLocation(piece, Yut.values()[i]); // 말의 상태가 GOAL일 경우 여기서 예외 발생
             }
         }
-        return List.copyOf(locations); // 불변 List로 리턴
+        return Arrays.stream(locations).toList(); // 불변 List로 리턴
     }
 
     /**

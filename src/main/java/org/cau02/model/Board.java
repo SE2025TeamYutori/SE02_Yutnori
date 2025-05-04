@@ -28,7 +28,6 @@ public abstract class Board {
     List<BoardPath> paths = new ArrayList<>(); // 경로들
     HashMap<BoardSpace, Piece> pieceOnBoardMap = new HashMap<>(); // 게임판 위의 말들 정보
 
-
     /**
      * 시작 칸을 반환합니다.
      * @return 시작 칸
