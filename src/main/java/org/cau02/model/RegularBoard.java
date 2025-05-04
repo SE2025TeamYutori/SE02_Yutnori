@@ -16,7 +16,7 @@ import java.util.stream.IntStream;
  */
 public abstract class RegularBoard extends Board {
     protected final int boardAngle; // n각형의 n
-    private final HashMap<BoardPath, HashMap<BoardSpace, BoardPath>> stateMachine = new HashMap<>();
+    private final HashMap<BoardPath, HashMap<BoardSpace, BoardPath>> stateMachine = new HashMap<>(); // computeNextPath에서 사용할 상태머신 Map
 
     /**
      * 게임판이 몇각형 모양인지 반환합니다.
