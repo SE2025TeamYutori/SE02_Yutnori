@@ -158,6 +158,10 @@ public class Controller_test_cli {
                             }
                             System.out.print("이동할 말의 번호를 선택하세요: ");
                             int pi = sc.nextInt();
+                            System.out.println("가능한 목적지 목록");
+                            for (BoardSpace s : gm.getPossibleLocations(ps.get(pi))) {
+                                System.out.print(gm.getBoard().getSpaces().indexOf(s) + " ");
+                            }
                             System.out.println("어떤 족보로 이동할까요: 0-빽도, 1-도, 2-개, 3-걸, 4-윷, 5-모");
                             System.out.println("족보 별 남은 이동 횟수");
                             for (Yut y : Yut.values()) {

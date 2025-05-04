@@ -4,6 +4,13 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+/*
+ * TODO
+ *  아직 Board랑 Piece의 이동 관련 책임 분리가 완벽하게 나뉘어지지 않음
+ *  약간 스파게티 상태..
+ *  근데 일단 돌아가니까 시간 많이 남으면 그때 수정해볼게요
+ */
+
 // 보드의 말 이동 결과
 enum MoveResult {
     MOVE, // 그냥 이동

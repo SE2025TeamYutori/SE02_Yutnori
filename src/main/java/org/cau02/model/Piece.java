@@ -147,8 +147,6 @@ public class Piece {
         carry.carries.clear();
     }
 
-
-
     // 외부에서 생성 못하도록 한 장치
     Piece(BoardSpace readySpace, BoardPath defaultPath, int owner) {
         location = readySpace;
