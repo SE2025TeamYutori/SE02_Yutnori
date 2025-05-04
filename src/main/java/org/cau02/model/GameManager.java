@@ -114,9 +114,11 @@ public class GameManager {
     /**
      * 현재 게임의 상태를 반환합니다
      * @return 현재 게임의 상태
-     * <ul>{@link GameState#READY}: 게임 시작 전</ul>
-     * <ul>{@link GameState#PLAYING}: 게임 중</ul>
-     * <ul>{@link GameState#FINISHED}: 게임 종료</ul>
+     * <ul>
+        * <li>{@link GameState#READY}: 게임 시작 전</li>
+        * <li>{@link GameState#PLAYING}: 게임 중</li>
+        * <li>{@link GameState#FINISHED}: 게임 종료</li>
+     * </ul>
      */
     public GameState getState() {
         return state;

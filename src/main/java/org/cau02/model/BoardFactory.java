@@ -6,8 +6,8 @@ class BoardFactory {
         return switch (boardAngle) {
             case 4 -> new SquareBoard();
             case 5 -> new PentagonBoard();
-            case 6 -> new HexagonBoard(); // 현재 x
-            default -> throw new IllegalArgumentException("해당 범위의 값으로 게임판을 생성할 수 없습니다.");
+            case 6 -> new HexagonBoard();
+            default -> new RegularBoard(boardAngle) {}; // 익명클래스로 생성
         };
     }
 }

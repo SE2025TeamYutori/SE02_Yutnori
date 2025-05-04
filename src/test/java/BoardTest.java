@@ -1,3 +1,5 @@
+import org.cau02.model.RegularBoard;
+import org.cau02.model.SquareBoard;
 import org.cau02.model.old.GenericBoardConfiguration;
 import org.cau02.model.old.PathNode;
 import org.cau02.model.old.interfaces.IBoardConfiguration;

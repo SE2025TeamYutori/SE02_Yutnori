@@ -2,7 +2,6 @@ package org.cau02.model;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 // TODO 움직임 관련 로직 Board로 옮길 필요 있음
 
@@ -33,10 +32,12 @@ public class Piece {
     /**
      * 현재 말의 상태를 반환합니다.
      * @return 현재 말의 상태
-     * <ul>{@link PieceState#READY}: 출발 전</ul>
-     * <ul>{@link PieceState#ACTIVE}: 게임판 위에 존재</ul>
-     * <ul>{@link PieceState#CARRIED}: 누군가에게 업힘</ul>
-     * <ul>{@link PieceState#GOAL}: 도착함</ul>
+     * <ul>
+        * <li>{@link PieceState#READY}: 출발 전</li>
+        * <li>{@link PieceState#ACTIVE}: 게임판 위에 존재</li>
+        * <li>{@link PieceState#CARRIED}: 누군가에게 업힘</li>
+        * <li>{@link PieceState#GOAL}: 도착함</li>
+     * </ul>
      */
     public PieceState getState() {
         return state;
