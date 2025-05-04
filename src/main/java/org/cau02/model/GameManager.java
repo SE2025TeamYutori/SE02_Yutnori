@@ -273,7 +273,7 @@ public class GameManager {
         for (int i = 0; i < playerCount; i++) {
             readyPieces[i] = new LinkedList<>();
             for (int j = 0; j < pieceCount; j++) {
-                readyPieces[i].add(new Piece(board, i));
+                readyPieces[i].add(new Piece(board.getReadySpace(), board.getDefaultPath(), i));
             }
             activePieces[i] = new HashSet<>();
             goalPieces[i] = new LinkedList<>();
@@ -357,12 +357,12 @@ public class GameManager {
         List<BoardSpace> locations = new ArrayList<>();
         // 빽도는 ACTIVE 상태일때만 계산 가능
         if (piece.getState() == PieceState.ACTIVE && yutResult[0] > 0) {
-            locations.add(piece.getPossibleLocation(Yut.BACKDO));
+            locations.add(board.getPossibleLocation(piece, Yut.BACKDO));
         }
         // 빽도 제외 족보별 확인
         for (int i = 1; i < yutResult.length; i++) {
             if (yutResult[i] > 0) {
-                locations.add(piece.getPossibleLocation(Yut.values()[i])); // 말의 상태가 GOAL일 경우 여기서 예외 발생
+                locations.add(board.getPossibleLocation(piece, Yut.values()[i])); // 말의 상태가 GOAL일 경우 여기서 예외 발생
             }
         }
         return List.copyOf(locations); // 불변 List로 리턴
@@ -406,11 +406,11 @@ public class GameManager {
             throw new IllegalStateException("해당 족보의 이동 가능 횟수가 없습니다.");
         }
 
-        piece.move(yut); // 말 이동
-        MoveResult movedResult = board.setPieceOnBoardSpace(piece, piece.getLocation()); // 게임판의 말 위치 갱신 <- 원래는 이거 Piece에서 하는게 맞긴 한데 구조 덜 뜯어고치면서 잡았는지 체킹하려고 일단 이렇게 구현
+        MoveResult movedResult = board.move(piece, yut); // 말 이동
         yutResult[yut.ordinal()]--; // 해당 족보의 이동 가능 횟수 차감
 
-        // 윷이나 모를 사용하지 않고 말을 잡았을 경우 윷 던질수 있는 횟수 추가
+        // 윷이나 모를 사용하지 않고 말을 잡았을 경우 윷 던질수 있는 횟
+        // 수 추가
         if (movedResult == MoveResult.CATCH && yut != Yut.YUT && yut != Yut.MO) {
             currentYutCount++;
         }

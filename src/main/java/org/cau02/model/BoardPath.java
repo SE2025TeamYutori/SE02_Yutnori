@@ -32,7 +32,7 @@ public class BoardPath implements Iterable<BoardSpace> {
      * @return 위치한 인덱스
      */
     public int indexOf(BoardSpace space) {
-        return path.indexOf(space);
+        return path.lastIndexOf(space); // 0번 칸이 마지막 칸을 의미하기 때문에 lastIndexOf 사용
     }
 
     // 외부에서 생성 못하도록 한 장치.

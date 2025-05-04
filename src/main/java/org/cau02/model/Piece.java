@@ -12,7 +12,6 @@ import java.util.Objects;
 public class Piece {
     // properties
     private final int owner; // 소유자 플레이어 번호
-    private final Board board; // 위치한 게임판
 
     // states
     // 기본적으로 업혀있으면, location과 path 정보는 의미 없어지고, carrier에게 위임
@@ -32,14 +31,6 @@ public class Piece {
     }
 
     /**
-     * 이 말이 위치한 게임판 인스턴스를 반환합니다.
-     * @return 이 말이 위치한 게임판 인스턴스
-     */
-    public Board getBoard() {
-        return board;
-    }
-
-    /**
      * 현재 말의 상태를 반환합니다.
      * @return 현재 말의 상태
      * <ul>{@link PieceState#READY}: 출발 전</ul>
@@ -49,6 +40,44 @@ public class Piece {
      */
     public PieceState getState() {
         return state;
+    }
+
+    // 상태를 레디로 변경.
+    protected void setStateReady(BoardSpace readySpace, BoardPath defaultPath) {
+        state = PieceState.READY;
+        location = readySpace;
+        path = defaultPath;
+
+        // 업혀있는애들도 전부 초기화 + 업음/업힘 전부 해제
+        carrier = null;
+        for (Piece p : carries) {
+            p.state = PieceState.READY;
+            p.location = readySpace;
+            p.path = defaultPath;
+            p.carrier = null;
+        }
+        carries.clear();
+    }
+
+    // 상태를 활성화로 변경 (준비상태일때만)
+    protected void setStateActive() {
+        if (state == PieceState.READY) {
+            state = PieceState.ACTIVE;
+        }
+    }
+
+    // 상태를 도착으로 변경
+    protected void setStateGoal(BoardSpace goalSpace) {
+        state = PieceState.GOAL;
+        location = goalSpace;
+
+        carrier = null;
+        for (Piece p : carries) { // 업혀있는애들도 전부 도착 처리 + 업음/업힘 전부 해제
+            p.state = PieceState.GOAL;
+            p.location = goalSpace;
+            p.carrier = null;
+        }
+        carries.clear();
     }
 
     /**
@@ -61,6 +90,10 @@ public class Piece {
         } else {
             return location;
         }
+    }
+
+    protected void setLocation(BoardSpace space) {
+        this.location = space;
     }
 
     /**
@@ -78,6 +111,10 @@ public class Piece {
         } else {
             return path;
         }
+    }
+
+    protected void setPath(BoardPath path) {
+        this.path = path;
     }
 
     /**
@@ -110,97 +147,12 @@ public class Piece {
         carry.carries.clear();
     }
 
+
+
     // 외부에서 생성 못하도록 한 장치
-    Piece(Board board, int owner) {
-        this.board = Objects.requireNonNull(board, "");
-        location = board.readySpace;
-        path = board.getDefaultPath();
+    Piece(BoardSpace readySpace, BoardPath defaultPath, int owner) {
+        location = readySpace;
+        path = defaultPath;
         this.owner = owner;
-    }
-
-    // 해당 족보로 이동 가능한 칸을 리턴
-    BoardSpace getPossibleLocation(Yut yut) {
-        if (state == PieceState.CARRIED) { // 업혀있으면 업은애한테 위임
-            return carrier.getPossibleLocation(yut);
-        } else if (state == PieceState.GOAL) { // 도착해있으면 예외
-            throw new IllegalArgumentException("도착한 말은 더이상 이동할 수 없습니다.");
-        } else if (state == PieceState.READY && yut == Yut.BACKDO) { // 대기상태인데 빽도면 예외
-            throw new IllegalArgumentException("출발 전 상태의 말은 빽도로 움직일 수 없습니다.");
-        }
-
-        // 경로의 인덱스 계산
-        int possibleIndex = yut.getValue();
-        if (state == PieceState.ACTIVE) {
-            possibleIndex += path.indexOf(location);
-        }
-
-        if (possibleIndex >= path.size()) { // 인덱스를 넘어가면 도착한거임
-            return board.goalSpace;
-        } else if (possibleIndex == 0) { // 0번칸은 마지막칸임
-            possibleIndex = path.size() - 1;
-        }
-
-        return path.get(possibleIndex);
-    }
-
-    // 해당 족보로 이동
-    void move(Yut yut) {
-        if (state == PieceState.CARRIED) { // 업혀있으면 업은애한테 위임
-            carrier.move(yut);
-            return;
-        } else if (state == PieceState.GOAL) { // 도착해있으면 예외
-            throw new IllegalStateException("도착한 말은 더이상 이동할 수 없습니다.");
-        } else if (state == PieceState.READY && yut == Yut.BACKDO) { // 대기상태인데 빽도면 예외
-            throw new IllegalArgumentException("출발 전 상태의 말은 빽도로 움직일 수 없습니다.");
-        }
-
-        // 경로의 인덱스 계산
-        int pathIndex = yut.getValue();
-        if (state == PieceState.ACTIVE) {
-            pathIndex += path.indexOf(location);
-        }
-
-        if (pathIndex >= path.size()) { // 인덱스를 넘어가면 도착한거임
-            state = PieceState.GOAL;
-            location = board.goalSpace;
-            for (Piece p : carries) { // 업혀있는애들도 전부 도착 처리 + 업음/업힘 전부 해제
-                p.state = PieceState.GOAL;
-                p.location = board.goalSpace;
-                p.carrier = null;
-            }
-            carries.clear();
-            return;
-        } else if (pathIndex == 0) { // 0번칸은 마지막칸임
-            pathIndex = path.size() - 1;
-        }
-
-        location = path.get(pathIndex); // 위치 설정
-        path = board.computeNextPath(path, location); // 경로 설정
-        if (state == PieceState.READY) { // 활성화
-            state = PieceState.ACTIVE;
-        }
-    }
-
-    // 해당 말 초기화 (대기상태로 보냄)
-    void reset() {
-        if (state == PieceState.CARRIED) { // 업혀있으면 업은애한테 위임
-            carrier.reset();
-            return;
-        }
-
-        //초기화
-        state = PieceState.READY;
-        location = board.readySpace;
-        path = board.getDefaultPath();
-
-        // 업혀있는애들도 전부 초기화 + 업음/업힘 전부 해제
-        carrier = null;
-        for (Piece p : carries) {
-            p.state = PieceState.READY;
-            p.location = board.readySpace;
-            p.path = board.getDefaultPath();
-            p.carrier = null;
-        }
-        carries.clear();
     }
 }
