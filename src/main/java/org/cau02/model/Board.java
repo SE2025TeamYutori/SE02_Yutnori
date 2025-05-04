@@ -97,7 +97,7 @@ public abstract class Board {
     }
 
     // 해당 말을 해당 족보로 이동
-    MoveResult move(Piece piece, Yut yut) {
+    MoveResult move(Piece piece, Yut yut) throws IllegalArgumentException, IllegalStateException {
         if (piece.getState() == PieceState.CARRIED) { // 업혀있으면 업은애한테 위임
             return move(piece.getCarrier(), yut);
         }

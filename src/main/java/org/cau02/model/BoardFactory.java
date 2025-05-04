@@ -2,7 +2,7 @@ package org.cau02.model;
 
 // 게임판 인스턴스 생성용 팩토리
 class BoardFactory {
-    static Board createBoard(int boardAngle) throws IllegalArgumentException {
+    static Board createBoard(int boardAngle) {
         return switch (boardAngle) {
             case 4 -> new SquareBoard();
             case 5 -> new PentagonBoard();
