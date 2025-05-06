@@ -1,5 +1,5 @@
-package org.cau02.model.interfaces;
-import org.cau02.model.PathNode;
+package org.cau02.model.old.interfaces;
+import org.cau02.model.old.PathNode;
 
 import java.util.List;
 

@@ -1,5 +1,5 @@
-package org.cau02.model;
-import org.cau02.model.interfaces.IBoardConfiguration;
+package org.cau02.model.old;
+import org.cau02.model.old.interfaces.IBoardConfiguration;
 
 import java.util.*;
 

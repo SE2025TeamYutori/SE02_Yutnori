@@ -1,4 +1,4 @@
-package org.cau02.model;
+package org.cau02.model.old;
 
 import java.util.*;
 import java.util.stream.Collectors;

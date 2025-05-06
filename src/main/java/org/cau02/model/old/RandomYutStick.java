@@ -1,5 +1,5 @@
-package org.cau02.model;
-import org.cau02.model.interfaces.YutStickBehavior;
+package org.cau02.model.old;
+import org.cau02.model.old.interfaces.YutStickBehavior;
 import java.util.Random;
 
 /** 윷 던지는 행위를 담당 */

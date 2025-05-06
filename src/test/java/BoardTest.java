@@ -1,6 +1,8 @@
-import org.cau02.model.GenericBoardConfiguration;
-import org.cau02.model.PathNode;
-import org.cau02.model.interfaces.IBoardConfiguration;
+import org.cau02.model.RegularBoard;
+import org.cau02.model.SquareBoard;
+import org.cau02.model.old.GenericBoardConfiguration;
+import org.cau02.model.old.PathNode;
+import org.cau02.model.old.interfaces.IBoardConfiguration;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
