@@ -359,8 +359,8 @@ public class GameManager {
         }
 
         BoardSpace[] locations = new BoardSpace[Yut.values().length];
-        // 빽도는 ACTIVE 상태일때만 계산 가능
-        if (piece.getState() == PieceState.ACTIVE && yutResult[0] > 0) {
+        // 빽도는 ACTIVE 상태나 CARRIED 상태일때만 계산 가능
+        if ((piece.getState() == PieceState.ACTIVE || piece.getState() == PieceState.CARRIED) && yutResult[0] > 0) {
             locations[Yut.BACKDO.ordinal()] = board.getPossibleLocation(piece, Yut.BACKDO);
         }
         // 빽도 제외 족보별 확인
