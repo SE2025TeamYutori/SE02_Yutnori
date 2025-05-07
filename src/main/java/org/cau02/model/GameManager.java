@@ -284,12 +284,23 @@ public class GameManager {
 
     /**
      * 무작위 윷을 던집니다.
+     * 각 윷이 나올 확률은 { 3.59%, 10.79%, 33.89%, 35.49%, 13.94%, 2.29% }
      * @return 던진 윷의 결과
      * @throws IllegalStateException 윷을 던질 수 있는 횟수가 없을 경우 or 게임 상태가 {@link GameState#PLAYING}이 아닐 경우
      */
     public Yut throwRandomYut() throws IllegalStateException {
-        // 랜덤 Yut 값을 생성하고, 선택 윷 던지기를 호출
-        Yut randomYut = Yut.values()[random.nextInt(Yut.values().length)];
+        // 랜덤 Yut값을 생성하고 선택 윷 던지기를 호출
+        final double[] cumulativeProbabilities = { 3.59, 14.38, 48.27, 83.76, 97.7 }; // 누적확률; 모(else)한테 확률 0.01% 더줌 ㅎㅎ
+        final double randomPercent = Math.random() * 100.0; // 랜덤값; [0.0, 100.0)
+        
+        Yut randomYut = Yut.MO; // [97.7, 100.0) 의 경우 (누적확률의 바깥 공간의 경우)
+        for (int i = 0; i < cumulativeProbabilities.length; i++) {
+            if (randomPercent < cumulativeProbabilities[i]) { // 누적확률의 사이 공간에 있는지 체크
+                randomYut = Yut.values()[i];
+                break;
+            }
+        }
+
         return throwSelectedYut(randomYut);
     }
 
