@@ -111,6 +111,13 @@ public abstract class Board {
             throw new IllegalArgumentException("현재 게임판에 존재하지 않은 말은 이동할 수 없습니다.");
         }
 
+        // 이전에 있던 부분에서 제거
+        for (BoardSpace s : pieceOnBoardMap.keySet()) {
+            if (pieceOnBoardMap.get(s) == piece) {
+                pieceOnBoardMap.put(s, null);
+            }
+        }
+
         // 경로의 인덱스 계산
         int pathIndex = yut.getValue();
         if (piece.getState() == PieceState.ACTIVE) {
@@ -128,13 +135,6 @@ public abstract class Board {
 
         // 말을 게임판의 해당 위치에 세팅.
         // 잡기, 업기 처리도 하고 그랬는지 리턴
-        
-        // 이전에 있던 부분에서 제거
-        for (BoardSpace s : pieceOnBoardMap.keySet()) {
-            if (pieceOnBoardMap.get(s) == piece) {
-                pieceOnBoardMap.put(s, null);
-            }
-        }
 
         // 일반 상황 처리
         Piece oldPiece = pieceOnBoardMap.get(piece.getLocation()); // 움직일 위치에 있던 말 
