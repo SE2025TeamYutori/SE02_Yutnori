@@ -1,7 +1,7 @@
 package org.cau02.controller;
 
-import org.cau02.model.*;
-import org.cau02.model.interfaces.IBoardConfiguration;
+import org.cau02.model.old.interfaces.IBoardConfiguration;
+import org.cau02.model.old.*;
 import org.cau02.view.GameView;
 import org.cau02.view.ThrowType;
 

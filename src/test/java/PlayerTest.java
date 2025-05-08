@@ -1,7 +1,7 @@
-import org.cau02.model.Color;
-import org.cau02.model.Player;
+import org.cau02.model.old.Color;
+import org.cau02.model.old.Player;
 import org.cau02.view.GameView;
-import org.cau02.model.Move;
+import org.cau02.model.old.Move;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

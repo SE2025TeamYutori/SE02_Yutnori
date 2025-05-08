@@ -1,75 +1,157 @@
 package org.cau02.model;
-import java.util.Objects;
 
-import java.util.Objects;
+import java.util.ArrayList;
+import java.util.List;
 
-/** 플레이어의 말(Pawn) */
+// TODO 움직임 관련 로직 Board로 옮길 필요 있음
+
+/**
+ * 말 하나를 나타내는 클래스입니다.
+ */
 public class Piece {
-    private final int id;           // 플레이어 내 말 식별 번호
-    private final Player owner;     // 이 말의 소유자
-    private PathNode position;      // 현재 위치 (null이면 시작 전/완주 후)
-    private boolean isHome = true;      // 시작 위치(집)에 있는지 여부
-    private boolean isFinished = false; // 완주 여부
-    // TODO: 업힌 말 목록 등 추가 상태 구현 가능
+    // properties
+    private final int owner; // 소유자 플레이어 번호
 
-    public Piece(int id, Player owner) {
-        this.id = id;
-        this.owner = Objects.requireNonNull(owner, "말의 소유자는 null일 수 없습니다.");
-        this.position = null; // 초기 상태: 집
+    // states
+    // 기본적으로 업혀있으면, location과 path 정보는 의미 없어지고, carrier에게 위임
+    private PieceState state = PieceState.READY; // 말 상태
+    private BoardSpace location; // 말 위치 칸
+    private BoardPath path; // 말 경로
+    private Piece carrier = null; // 이 말을 업고 있는 말
+    private final List<Piece> carries = new ArrayList<>(); // 이 말이 업고 있는 말들
+
+    // getter & setter
+    /**
+     * 이 말을 소유한 플레이어의 번호를 반환합니다.
+     * @return 이 말을 소유한 플레이어 번호
+     */
+    public int getOwner() {
+        return owner;
     }
 
-    /** 말을 지정된 위치로 이동시킵니다. (MovementService에서 호출) */
-    public void moveTo(PathNode destination) {
-        this.position = destination; // null이 될 수도 있음 (잡히거나 완주 시)
-        this.isHome = false;
+    /**
+     * 현재 말의 상태를 반환합니다.
+     * @return 현재 말의 상태
+     * <ul>
+        * <li>{@link PieceState#READY}: 출발 전</li>
+        * <li>{@link PieceState#ACTIVE}: 게임판 위에 존재</li>
+        * <li>{@link PieceState#CARRIED}: 누군가에게 업힘</li>
+        * <li>{@link PieceState#GOAL}: 도착함</li>
+     * </ul>
+     */
+    public PieceState getState() {
+        return state;
     }
 
-    /** 말을 시작 위치(집)으로 되돌립니다. (MovementService에서 호출) */
-    public void returnToHome() {
-        this.position = null;
-        this.isHome = true;
-        this.isFinished = false; // 잡히면 완주 상태 해제
-    }
+    // 상태를 레디로 변경.
+    protected void setStateReady(BoardSpace readySpace, BoardPath defaultPath) {
+        state = PieceState.READY;
+        location = readySpace;
+        path = defaultPath;
 
-    /** 말의 완주 상태를 설정합니다. (MovementService에서 호출) */
-    public void setFinished(boolean finished) {
-        if (finished) {
-            this.position = null; // 완주하면 판에서 제거됨
-            this.isHome = false;
+        // 업혀있는애들도 전부 초기화 + 업음/업힘 전부 해제
+        carrier = null;
+        for (Piece p : carries) {
+            p.state = PieceState.READY;
+            p.location = readySpace;
+            p.path = defaultPath;
+            p.carrier = null;
         }
-        this.isFinished = finished;
+        carries.clear();
     }
 
-    // --- 상태 확인 메서드 ---
-    public boolean isAtHome() { return isHome && !isFinished; }
-    public boolean isOnBoard() { return position != null && !isFinished; }
-    public boolean isFinished() { return isFinished; }
-
-    // --- Getters ---
-    public int getId() { return id; }
-    public Player getOwner() { return owner; }
-    public PathNode getPosition() { return position; }
-
-    @Override
-    public String toString() {
-        String posStr;
-        if (isFinished()) posStr = "완주";
-        else if (isAtHome()) posStr = "집";
-        else posStr = "칸" + position.getPosition();
-        return "말" + id + "(" + posStr + ")";
+    // 상태를 활성화로 변경 (준비상태일때만)
+    protected void setStateActive() {
+        if (state == PieceState.READY) {
+            state = PieceState.ACTIVE;
+        }
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Piece piece = (Piece) o;
-        // 플레이어 내에서 ID가 고유하고, 플레이어도 고유 ID를 가지므로 조합하여 비교
-        return id == piece.id && owner.getId() == piece.owner.getId();
+    // 상태를 도착으로 변경
+    protected void setStateGoal(BoardSpace goalSpace) {
+        state = PieceState.GOAL;
+        location = goalSpace;
+
+        carrier = null;
+        for (Piece p : carries) { // 업혀있는애들도 전부 도착 처리 + 업음/업힘 전부 해제
+            p.state = PieceState.GOAL;
+            p.location = goalSpace;
+            p.carrier = null;
+        }
+        carries.clear();
     }
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(id, owner.getId());
+    /**
+     * 현재 말이 위치한 칸을 반환합니다.
+     * @return 현재 말이 위치한 칸
+     */
+    public BoardSpace getLocation() {
+        if (state == PieceState.CARRIED) { // 업혀있으면 업고있는애 정보 반환
+            return carrier.getLocation();
+        } else {
+            return location;
+        }
+    }
+
+    protected void setLocation(BoardSpace space) {
+        this.location = space;
+    }
+
+    /**
+     * 현재 말의 경로를 반환합니다.
+     * @return 현재 말의 경로
+     * @throws IllegalStateException 현재 말의 상태가 {@link PieceState#GOAL}이면
+     */
+    public BoardPath getPath() throws IllegalStateException {
+        if (state == PieceState.GOAL) {
+            throw new IllegalStateException("도착한 말의 경로를 반환할 수 없습니다.");
+        }
+        
+        if (state == PieceState.CARRIED) { // 업혀있으면 업고있는애 정보 반환
+            return carrier.path;
+        } else {
+            return path;
+        }
+    }
+
+    protected void setPath(BoardPath path) {
+        this.path = path;
+    }
+
+    /**
+     * 현재 말을 업고 있는 말을 반환합니다.
+     * @return 현재 말을 업고 있는 말. 업혀있지 않다면 null 반환
+     */
+    public Piece getCarrier() {
+        return carrier;
+    }
+
+    /**
+     * 현재 말이 업고 있는 말들의 List를 반환합니다.
+     * @return 현재 말이 업고 있는 말들의 List
+     */
+    public List<Piece> getCarries() {
+        return List.copyOf(carries); // 불변 리스트로 반환
+    }
+
+    // 해당 말을 업음
+    void addCarry(Piece carry) throws IllegalArgumentException {
+        if (carry.owner != this.owner) { // 둘이 소유자가 다르면 못업음
+            throw new IllegalArgumentException("소유자가 다른 말을 업을 수 없습니다.");
+        }
+        // 해당 말이 업고 있는 애들까지 전부 업고, 해당 말의 carriers를 clear
+        carry.state = PieceState.CARRIED;
+        carry.carrier = this;
+        carry.carries.forEach(p -> p.carrier = this);
+        this.carries.add(carry);
+        this.carries.addAll(carry.carries);
+        carry.carries.clear();
+    }
+
+    // 외부에서 생성 못하도록 한 장치
+    Piece(BoardSpace readySpace, BoardPath defaultPath, int owner) {
+        location = readySpace;
+        path = defaultPath;
+        this.owner = owner;
     }
 }
