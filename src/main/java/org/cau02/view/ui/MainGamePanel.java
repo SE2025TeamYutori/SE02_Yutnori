@@ -17,10 +17,12 @@ public class MainGamePanel extends JPanel {
     /**
      * 일반적인 형태 : boardPanel
      * 정사각형 형태 : squareBoardUI
+     * 오각형 형태 : pentagonBoardUI
      * 정사각형 외 나머지 판은 아직 미구현 (현재 원형 판 형태로 나타남)
      */
     private BoardPanel boardPanel;
     private SquareBoardUI squareBoardUI;
+    private PentagonBoardUI pentagonBoardUI; 
 
 
     private final ControlPanel controlPanel; //게임 컨트롤러 패널
@@ -50,6 +52,7 @@ public class MainGamePanel extends JPanel {
         // 보드 패널 생성
         boardPanel = new BoardPanel(gameManager);
         squareBoardUI = new SquareBoardUI(gameManager);
+        pentagonBoardUI = new PentagonBoardUI(gameManager);
         controlPanel = new ControlPanel(gameManager);
         
         // 보드 UI를 담는 컨테이너 패널 생성
@@ -115,6 +118,19 @@ public class MainGamePanel extends JPanel {
             }
             squareBoardUI.showPossibleMoves(possibleMoves);
         });
+
+        //오각형 보드 패널에 말 선택 콜백 설정
+        pentagonBoardUI.setOnPieceSelected(piece -> {
+            controlPanel.setSelectedPiece(piece);
+            Map<Yut, BoardSpace> possibleMoves = new HashMap<>();
+            List<BoardSpace> locations = gameManager.getPossibleLocations(piece);
+            for (int i = 0; i < locations.size(); i++) {
+                if (locations.get(i) != null) {
+                    possibleMoves.put(Yut.values()[i], locations.get(i));
+                }
+            }
+            pentagonBoardUI.showPossibleMoves(possibleMoves);
+        });
         
         // 버튼 클릭 이벤트 처리
         startGameButton.addActionListener(new ActionListener() {
@@ -135,6 +151,9 @@ public class MainGamePanel extends JPanel {
                     if (boardShape == 4) {
                         // 4각형 보드 UI 사용
                         currentBoardContainer.add(squareBoardUI, BorderLayout.CENTER);
+                    } else if (boardShape == 5) {
+                        // 5각형 보드 UI 사용
+                        currentBoardContainer.add(pentagonBoardUI, BorderLayout.CENTER);
                     } else {
                         // 기타 보드 형태 UI 사용
                         currentBoardContainer.add(boardPanel, BorderLayout.CENTER);
@@ -163,6 +182,7 @@ public class MainGamePanel extends JPanel {
                 gameManager.resetGame();
                 boardPanel.clearPossibleMoves();
                 squareBoardUI.clearPossibleMoves();
+                pentagonBoardUI.clearPossibleMoves();
                 
                 // 기본 보드 뷰로 초기화
                 currentBoardContainer.removeAll();
@@ -252,7 +272,11 @@ public class MainGamePanel extends JPanel {
             RegularBoard board = (RegularBoard) gameManager.getBoard();
             if (board.getBoardAngle() == 4 && squareBoardUI != null) {
                 squareBoardUI.repaint();
-            } else if (boardPanel != null) {
+            } 
+            else if (board.getBoardAngle() == 5 && pentagonBoardUI != null) {
+                pentagonBoardUI.repaint();
+            }
+            else if (boardPanel != null) {
                 boardPanel.repaint();
             }
         } else if (boardPanel != null) {
