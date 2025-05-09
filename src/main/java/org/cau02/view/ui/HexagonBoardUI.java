@@ -10,18 +10,7 @@ import java.util.*;
 import java.util.List;
 import java.util.function.Consumer;
 
-/**
- * 정육각형(43 노드) 보드를 그리는 UI.
- *
- * <pre>
- * ─ 노드 번호 규칙 ─────────────────────────────────────────────────────────
- *   ▸ 꼭짓점  : 0, 5, 10, 15, 20, 25   (300° → 0° → … 240°, 반시계)
- *   ▸ 외곽-링 : 0‥29  (각 변에 꼭짓점 포함 6 개)
- *   ▸ 방사형  : 30‥41 (vertex k ↔ center 사이 2 개 : 30+2k, 30+2k+1)
- *   ▸ 중앙    : 42
- *   총 43 개
- * </pre>
- */
+
 public class HexagonBoardUI extends JPanel {
 
     /* ────────── 필드 ────────── */
@@ -78,53 +67,52 @@ public class HexagonBoardUI extends JPanel {
     }
 
 
-    /* ────────── 레이아웃 계산 ────────── */
+	//레이아웃 계산
     private void calculateHexagonBoardLayout() {
         spaceLocations.clear();
         spaceConnections.clear();
 
         Board board = gameManager.getBoard();
         List<BoardSpace> spaces = board.getSpaces();
-        if (spaces.size() < 43) return;                       // 방어
+        if (spaces.size() < 43) return;
 
-        /* 인덱스 ↔ 공간 빠른 매핑 */
+        /* 인덱스 ↔ BoardSpace */
         Map<Integer, BoardSpace> idx = new HashMap<>();
         for (int i = 0; i < 43; i++) idx.put(i, spaces.get(i));
 
-        /* 중심 & 반경 */
+        /* 중심·반경 */
         int padding = 60;
-        int d  = Math.min(getWidth(), getHeight()) - 2 * padding;
-        int r  = d / 2;
+        int d = Math.min(getWidth(), getHeight()) - 2 * padding;
+        int r = d / 2;
         Point center = new Point(getWidth() / 2, getHeight() / 2);
 
-        /* 1️⃣ 꼭짓점(6) */
-        double startDeg = 60;                                // 4 시 방향
+        /* 1️⃣ 꼭짓점 0,5,10,15,20,25 */
+        double startDeg = 60;
         for (int v = 0; v < 6; v++) {
-            double ang = Math.toRadians(startDeg - v * 60);   // 시계 -60°
+            double ang = Math.toRadians(startDeg - v * 60.0);   // 시계 방향
             int x = (int) (center.x + r * Math.cos(ang));
             int y = (int) (center.y + r * Math.sin(ang));
             spaceLocations.put(idx.get(v * 5), new Point(x, y));
         }
 
-        /* 2️⃣ 각 변 내부 4 노드 (총 24) */
+        /* 2️⃣ 변 내부 4 노드 */
         for (int side = 0; side < 6; side++) {
-            int vsIdx = side * 5;
-            int veIdx = ((side + 1) % 6) * 5;
-            Point ps = spaceLocations.get(idx.get(vsIdx));
-            Point pe = spaceLocations.get(idx.get(veIdx));
-            for (int k = 1; k <= 4; k++) {                    // 0.2, 0.4, 0.6, 0.8
+            int vs = side * 5, ve = ((side + 1) % 6) * 5;
+            Point ps = spaceLocations.get(idx.get(vs));
+            Point pe = spaceLocations.get(idx.get(ve));
+            for (int k = 1; k <= 4; k++) {
                 double t = k / 5.0;
-                int x = (int) (ps.x + t * (pe.x - ps.x));
-                int y = (int) (ps.y + t * (pe.y - ps.y));
-                spaceLocations.put(idx.get(vsIdx + k), new Point(x, y));
+                spaceLocations.put(idx.get(vs + k),
+                    new Point((int)(ps.x + t*(pe.x-ps.x)), (int)(ps.y + t*(pe.y-ps.y))));
             }
         }
 
-        /* 3️⃣ 방사형 노드(12) : vertex → center 를 3-등분 */
+        /* 3️⃣ 방사형(12)  —  새 번호 매핑 */
+        int[] outerRad = { 40, 30, 32, 34, 36, 38 };   // vertex 0,5,10,15,20,25
         for (int k = 0; k < 6; k++) {
             int vIdx = k * 5;
-            int outerIdx = 30 + 2 * k;
-            int innerIdx = outerIdx + 1;
+            int outerIdx = outerRad[k];     // 바깥쪽
+            int innerIdx = outerIdx + 1;    // 안쪽
 
             Point vp = spaceLocations.get(idx.get(vIdx));
             int x1 = (int) (vp.x + (center.x - vp.x) / 3.0);
@@ -139,27 +127,19 @@ public class HexagonBoardUI extends JPanel {
         /* 4️⃣ 중앙 */
         spaceLocations.put(idx.get(42), center);
 
-        /* ─ 연결 정보 구축 ─ */
+        /* 연결(외곽·방사선) … 기존 코드 동일 */
         spaceLocations.keySet().forEach(bs -> spaceConnections.put(bs, new ArrayList<>()));
-
-        /* 외곽-링 30 선분 */
         for (int i = 0; i < 30; i++) {
-            BoardSpace a = idx.get(i);
-            BoardSpace b = idx.get((i + 1) % 30);
-            spaceConnections.get(a).add(b);
-            spaceConnections.get(b).add(a);
+            BoardSpace a = idx.get(i), b = idx.get((i + 1) % 30);
+            spaceConnections.get(a).add(b);  spaceConnections.get(b).add(a);
         }
-
-        /* 6 개 방사선 */
         for (int k = 0; k < 6; k++) {
-            BoardSpace v  = idx.get(k * 5);
-            BoardSpace r1 = idx.get(30 + 2 * k);
-            BoardSpace r2 = idx.get(30 + 2 * k + 1);
-            BoardSpace c  = idx.get(42);
-
-            spaceConnections.get(v).add(r1);   spaceConnections.get(r1).add(v);
-            spaceConnections.get(r1).add(r2);  spaceConnections.get(r2).add(r1);
-            spaceConnections.get(r2).add(c);   spaceConnections.get(c).add(r2);
+            int vIdx = k * 5;
+            int outerIdx = outerRad[k], innerIdx = outerIdx + 1;
+            BoardSpace v = idx.get(vIdx), r1 = idx.get(outerIdx), r2 = idx.get(innerIdx), c = idx.get(42);
+            spaceConnections.get(v).add(r1); spaceConnections.get(r1).add(v);
+            spaceConnections.get(r1).add(r2); spaceConnections.get(r2).add(r1);
+            spaceConnections.get(r2).add(c); spaceConnections.get(c).add(r2);
         }
     }
 
@@ -221,7 +201,7 @@ public class HexagonBoardUI extends JPanel {
         for (int player = 0; player < gameManager.getPlayerCount(); player++) {
             Map<BoardSpace, List<Piece>> grouped = new HashMap<>();
             for (Piece pc : gameManager.getActivePieces(player)) {
-                grouped.computeIfAbsent(pc.getLocation(), k -> new ArrayList<>()).add(pc);
+                grouped.computeIfAbsent(pc.getLocation(), _ -> new ArrayList<>()).add(pc);
             }
 
             grouped.forEach((sp, list) -> {
@@ -282,6 +262,6 @@ public class HexagonBoardUI extends JPanel {
     }
     private boolean isNear(int cx, int cy, int px, int py) {
         int dx = cx - px, dy = cy - py;
-        return dx * dx + dy * dy <= 225;                       // 15 px 반경
+        return dx * dx + dy * dy <= 225;
     }
 }

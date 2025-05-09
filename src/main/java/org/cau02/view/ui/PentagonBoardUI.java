@@ -193,7 +193,7 @@ public class PentagonBoardUI extends JPanel {
             for (int player = 0; player < gameManager.getPlayerCount(); player++) {
                 Map<BoardSpace, List<Piece>> grouped = new HashMap<>();
                 for (Piece pc : gameManager.getActivePieces(player)) {
-                    grouped.computeIfAbsent(pc.getLocation(), k -> new ArrayList<>()).add(pc);
+                    grouped.computeIfAbsent(pc.getLocation(), _ -> new ArrayList<>()).add(pc);
                 }
                 grouped.forEach((sp, list) -> {
                     Point p = spaceLocations.get(sp);
