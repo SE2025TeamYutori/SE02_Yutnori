@@ -18,12 +18,13 @@ public class MainGamePanel extends JPanel {
      * 일반적인 형태 : boardPanel
      * 정사각형 형태 : squareBoardUI
      * 오각형 형태 : pentagonBoardUI
+     * 육각형 형태 : hexagonBoardUI
      * 정사각형 외 나머지 판은 아직 미구현 (현재 원형 판 형태로 나타남)
      */
     private BoardPanel boardPanel;
     private SquareBoardUI squareBoardUI;
     private PentagonBoardUI pentagonBoardUI; 
-
+    private HexagonBoardUI hexagonBoardUI;
 
     private final ControlPanel controlPanel; //게임 컨트롤러 패널
     private JPanel currentBoardContainer; //현재 활성화된 보드 UI를 담는 컨테이너 패널
@@ -53,6 +54,7 @@ public class MainGamePanel extends JPanel {
         boardPanel = new BoardPanel(gameManager);
         squareBoardUI = new SquareBoardUI(gameManager);
         pentagonBoardUI = new PentagonBoardUI(gameManager);
+        hexagonBoardUI = new HexagonBoardUI(gameManager);
         controlPanel = new ControlPanel(gameManager);
         
         // 보드 UI를 담는 컨테이너 패널 생성
@@ -154,6 +156,9 @@ public class MainGamePanel extends JPanel {
                     } else if (boardShape == 5) {
                         // 5각형 보드 UI 사용
                         currentBoardContainer.add(pentagonBoardUI, BorderLayout.CENTER);
+                    } else if (boardShape == 6) {
+                        // 6각형 보드 UI 사용
+                        currentBoardContainer.add(hexagonBoardUI, BorderLayout.CENTER);
                     } else {
                         // 기타 보드 형태 UI 사용
                         currentBoardContainer.add(boardPanel, BorderLayout.CENTER);
