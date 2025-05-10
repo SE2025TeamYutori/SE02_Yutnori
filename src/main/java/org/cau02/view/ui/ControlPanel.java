@@ -6,6 +6,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.net.URL;
 import java.util.*;
 import java.util.List;
 
@@ -22,6 +23,9 @@ public class ControlPanel extends JPanel {
     
     private final JComboBox<Yut> selectYutComboBox = new JComboBox<>(Yut.values());
     private final JButton selectYutButton = new JButton("Throw Selected Yut");
+
+    private JLabel yutImageLabel;
+    private Map<Yut, ImageIcon> yutImages = new HashMap<>();
     
     private final JPanel activePiecesPanel = new JPanel();
     private final JButton moveNewPieceButton = new JButton("Move New Piece");
@@ -59,7 +63,32 @@ public class ControlPanel extends JPanel {
         yutPanel.add(selectYutPanel);
         
         controlsPanel.add(yutPanel);
-        
+
+        // 윷 이미지 띄우기
+        try {
+            for (Yut yut : Yut.values()) {
+                String imageName = yut.name().toLowerCase() + ".png";
+                URL imageURL = getClass().getResource("/org/cau02/view/yut_images/" + imageName);
+                if (imageURL != null) {
+                    ImageIcon icon = new ImageIcon(imageURL);
+                    yutImages.put(yut, icon);
+                } else {
+                    System.err.println("윷 이미지를 찾을 수 없음:"+imageName);
+                }
+            }
+        } catch (Exception e) {
+            System.err.println("윷 이미지 로드 실패: "+e.getMessage());
+        }
+
+        yutImageLabel = new JLabel(); // 윷 이미지 레이블
+        yutImageLabel.setHorizontalAlignment(JLabel.CENTER);
+
+        JPanel yutImagePanel = new JPanel(new BorderLayout()); // 윷 이미지 패널
+        yutImagePanel.add(new JLabel("다같이 던져윷~!", JLabel.CENTER), BorderLayout.NORTH);
+        yutImagePanel.add(yutImageLabel, BorderLayout.CENTER);
+
+        infoPanel.add(yutImagePanel); // 레이아웃에 윷 이미지 패널 추가
+
         // 말 이동 컨트롤
         controlsPanel.add(new JLabel("Active Pieces:"));
         
@@ -195,6 +224,17 @@ public class ControlPanel extends JPanel {
         
         // 활성 말 업데이트
         updateActivePieces();
+    }
+
+    public void showYutImage (Yut yut) {
+        if (yut != null && yutImages.containsKey(yut)) {
+            yutImageLabel.setIcon(yutImages.get(yut));
+        } else {
+            yutImageLabel.setIcon(null);
+            yutImageLabel.setText(yut != null ? yut.name(): "");
+        }
+        yutImageLabel.revalidate();
+        yutImageLabel.repaint();
     }
     
     //활성 말 표시 업데이트
