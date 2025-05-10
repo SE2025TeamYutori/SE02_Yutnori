@@ -29,6 +29,12 @@ for Software Engineering class Team project (2025)
 ### view (`org.cau02.controller`)
 - 역할: 사용자 인터페이스 제공
 - 주요 클래스:
+  <ul>
+    <li>BoardPanel: 윷놀이 게임판의 시각화</li>
+    <li>ControlPanel: 윷놀이 게임의 UI(윷 던지기나 게임말의 이동)를 위한 패널</li>
+    <li>MainGamePanel: 윷놀이 게임의 모든 GUI 컴포넌트의 중심 역할
+    <br>->N각형 윷놀이판 설정에 따른 UI 변경, 게임 설정 입력과 시작, BoardPanel/ControlPanel과 연동한 사용자 조작 처리 등</li>
+  </ul>
 
 ### controller (`org.cau02.view`)
 - 역힐: 게임 로직 제어와 view, model 간 연결 지원
