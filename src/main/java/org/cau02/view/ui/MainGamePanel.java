@@ -2,7 +2,6 @@ package org.cau02.view.ui;
 
 import org.cau02.model.*;
 
-import javax.naming.ldap.Control;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -100,7 +99,7 @@ public class MainGamePanel extends JPanel {
         add(setupPanel, BorderLayout.SOUTH);
 
         try{
-            URL imageURL = getClass().getResource("/org/cau02/view/cover_image.png");
+            URL imageURL = getClass().getResource("/cover_image.png");
             if (imageURL != null) {
                 coverImage = new ImageIcon(imageURL);
                 coverImageLabel = new JLabel(coverImage);

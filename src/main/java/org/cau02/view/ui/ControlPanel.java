@@ -68,7 +68,7 @@ public class ControlPanel extends JPanel {
         try {
             for (Yut yut : Yut.values()) {
                 String imageName = yut.name().toLowerCase() + ".png";
-                URL imageURL = getClass().getResource("/org/cau02/view/yut_images/" + imageName);
+                URL imageURL = getClass().getResource("/yut_images/" + imageName);
                 if (imageURL != null) {
                     ImageIcon icon = new ImageIcon(imageURL);
                     yutImages.put(yut, icon);
