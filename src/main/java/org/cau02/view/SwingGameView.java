@@ -33,6 +33,12 @@ public class SwingGameView {
         });
     }
 
+    public void showCoverImage() {
+        if (mainPanel != null) {
+            mainPanel.showCoverImage();
+        }
+    }
+
     //메인 GUI 컴포넌트들을 생성하고 구성
     private void createAndShowGUI() {
         // 게임 매니저를 사용하여 메인 패널 생성
