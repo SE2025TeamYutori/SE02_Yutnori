@@ -2,10 +2,12 @@ package org.cau02.view.ui;
 
 import org.cau02.model.*;
 
+import javax.naming.ldap.Control;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.net.URL;
 import java.util.*;
 import java.util.List;
 
@@ -29,6 +31,8 @@ public class MainGamePanel extends JPanel {
     private final ControlPanel controlPanel; //게임 컨트롤러 패널
     private JPanel currentBoardContainer; //현재 활성화된 보드 UI를 담는 컨테이너 패널
 
+    private JLabel coverImageLabel; // 커버 이미지용
+    private ImageIcon coverImage;   // 커버 이미지용
 
     //게임 정보 패널
     private final JPanel gameInfoPanel = new JPanel();
@@ -94,6 +98,24 @@ public class MainGamePanel extends JPanel {
         add(currentBoardContainer, BorderLayout.CENTER);
         add(controlPanel, BorderLayout.EAST);
         add(setupPanel, BorderLayout.SOUTH);
+
+        try{
+            URL imageURL = getClass().getResource("/org/cau02/view/cover_image.png");
+            if (imageURL != null) {
+                coverImage = new ImageIcon(imageURL);
+                coverImageLabel = new JLabel(coverImage);
+            } else {
+                System.err.println("커버 이미지를 찾을 수 없음");
+                coverImageLabel = new JLabel("YutNori Game");
+                coverImageLabel.setFont(new Font("Arial", Font.BOLD, 24));
+            }
+            coverImageLabel.setHorizontalAlignment(JLabel.CENTER);
+        } catch (Exception e) {
+            System.err.println("커버 이미지 로드 실패: " + e.getMessage());
+            coverImageLabel = new JLabel("YutNori Game");
+            coverImageLabel.setHorizontalAlignment(JLabel.CENTER);
+            coverImageLabel.setFont(new Font("Arial", Font.BOLD, 24));
+        }
         
         // 정사각형 보드 패널에 말 선택 콜백 설정
         boardPanel.setOnPieceSelected(piece -> {
@@ -239,6 +261,19 @@ public class MainGamePanel extends JPanel {
             startGameButton.setEnabled(true);
             resetGameButton.setEnabled(false);
         }
+    }
+
+    //커버 이미지 띄우기
+    public void showCoverImage(){
+        currentBoardContainer.removeAll();
+        currentBoardContainer.add(coverImageLabel, BorderLayout.CENTER);
+        currentBoardContainer.revalidate();
+        currentBoardContainer.repaint();
+    }
+
+    //윷 이미지 띄우기 위한 getter
+    public ControlPanel getControlPanel() {
+        return controlPanel;
     }
     
     //턴 정보 표시 업데이트
