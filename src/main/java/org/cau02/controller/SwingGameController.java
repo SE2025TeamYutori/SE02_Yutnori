@@ -23,6 +23,9 @@ public class SwingGameController {
     public void startGame() {
         // 먼저 뷰를 초기화
         view.initialize();
+
+        // 커버 이미지 띄우기
+        view.showCoverImage();
         
         // 기본 설정으로 게임 초기화
         setDefaultGameSettings();
