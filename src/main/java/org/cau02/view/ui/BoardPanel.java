@@ -199,7 +199,11 @@ public class BoardPanel extends JPanel {
         spaceLocations.put(indexedSpaces.get(centerNodeIdx), center);
         
         // 꼭짓점 노드 배치 (0, 5, 10, 15, ...)
-        double startAngle = Math.PI / n; // 시작 각도 (π/n)
+        double startAngle = Math.PI / n;
+        if(n == 5){
+            startAngle = Math.PI/3.33;
+        }
+
         for (int v = 0; v < n; v++) {
             int vertexIdx = v * 5;
             double angle = startAngle - (v * 2 * Math.PI / n); // 반시계방향으로 각도 감소
