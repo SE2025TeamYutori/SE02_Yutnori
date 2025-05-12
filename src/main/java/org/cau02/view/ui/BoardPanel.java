@@ -200,16 +200,13 @@ public class BoardPanel extends JPanel {
         
         // 꼭짓점 노드 배치 (0, 5, 10, 15, ...)
         double startAngle = Math.PI / n;
-        if(n == 5){
-            startAngle = Math.PI/3.33;
-        }
 
         for (int v = 0; v < n; v++) {
             int vertexIdx = v * 5;
-            double angle = startAngle - (v * 2 * Math.PI / n); // 반시계방향으로 각도 감소
+            double angle = startAngle + (v * 2 * Math.PI / n);
             
-            int x = (int) (center.x + radius * Math.cos(angle));
-            int y = (int) (center.y + radius * Math.sin(angle));
+            int x = (int) (center.x + radius * Math.sin(angle));
+            int y = (int) (center.y + radius * Math.cos(angle));
             
             spaceLocations.put(indexedSpaces.get(vertexIdx), new Point(x, y));
         }
@@ -232,18 +229,18 @@ public class BoardPanel extends JPanel {
             }
         }
         
-        // 방사형 노드 배치 (5*n ~ 7*n-1)
+        // 대각 노드 배치 (5*n ~ 7*n-1)
         // 5번 노드부터 시작해서 0번 노드까지 차례로 대각선 노드 배치
         for (int v = 0; v < n; v++) {
             // 현재 처리할 꼭짓점 인덱스 - 5번부터 시작하여 0번까지 (5, 10, 15, ..., 0)
             int vertexIdx = ((v + 1) % n) * 5;
             // 대각선 노드 인덱스 계산
-            int outerIdx = 5 * n + 2 * v;     // 꼭짓점에 가까운 방사형 노드
-            int innerIdx = outerIdx + 1;      // 중앙에 가까운 방사형 노드
+            int outerIdx = 5 * n + 2 * v;     // 꼭짓점에 가까운 대각 노드
+            int innerIdx = outerIdx + 1;      // 중앙에 가까운 대각 노드
 
             Point vertexPoint = spaceLocations.get(indexedSpaces.get(vertexIdx));
 
-            // 꼭짓점과 중심 사이의 1/3, 2/3 지점에 방사형 노드 배치
+            // 꼭짓점과 중심 사이의 1/3, 2/3 지점에 대각 노드 배치
             int x1 = (int) (vertexPoint.x + (center.x - vertexPoint.x) / 3.0);
             int y1 = (int) (vertexPoint.y + (center.y - vertexPoint.y) / 3.0);
 
@@ -273,18 +270,18 @@ public class BoardPanel extends JPanel {
         // 중앙 노드 가져오기
         BoardSpace centerSpace = indexedSpaces.get(centerNodeIdx);
 
-        // 방사형 연결
+        // 대각 연결
         for (int v = 0; v < n; v++) {
             // 현재 처리할 꼭짓점 인덱스 - 5번부터 시작하여 0번까지 (5, 10, 15, ..., 0)
             int vertexIdx = ((v + 1) % n) * 5;
-            int outerIdx = 5 * n + 2 * v;     // 꼭짓점에 가까운 방사형 노드
-            int innerIdx = outerIdx + 1;      // 중앙에 가까운 방사형 노드
+            int outerIdx = 5 * n + 2 * v;     // 꼭짓점에 가까운 대각 노드
+            int innerIdx = outerIdx + 1;      // 중앙에 가까운 대각 노드
 
             BoardSpace vertex = indexedSpaces.get(vertexIdx);
             BoardSpace outer = indexedSpaces.get(outerIdx);
             BoardSpace inner = indexedSpaces.get(innerIdx);
 
-            // 꼭짓점 -> 방사형 -> 중앙 연결
+            // 꼭짓점 -> 대각 -> 중앙 연결
             spaceConnections.get(vertex).add(outer);
             spaceConnections.get(outer).add(inner);
             spaceConnections.get(inner).add(centerSpace);
