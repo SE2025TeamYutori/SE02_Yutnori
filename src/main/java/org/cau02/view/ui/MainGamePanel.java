@@ -14,52 +14,36 @@ public class MainGamePanel extends JPanel {
     private final GameManager gameManager;
     private final YutNoriSwingObserver observer;
     
-    /**
-     * 일반적인 형태 : boardPanel
-     * 정사각형 형태 : squareBoardUI
-     * 오각형 형태 : pentagonBoardUI
-     * 육각형 형태 : hexagonBoardUI
-     * 정사각형 외 나머지 판은 아직 미구현 (현재 원형 판 형태로 나타남)
-     */
+    // 통합 보드 패널
     private BoardPanel boardPanel;
-    private SquareBoardUI squareBoardUI;
-    private PentagonBoardUI pentagonBoardUI; 
-    private HexagonBoardUI hexagonBoardUI;
+    private final ControlPanel controlPanel; // 게임 컨트롤러 패널
+    private JPanel boardContainer; // 보드 UI를 담는 컨테이너 패널
 
-    private final ControlPanel controlPanel; //게임 컨트롤러 패널
-    private JPanel currentBoardContainer; //현재 활성화된 보드 UI를 담는 컨테이너 패널
-
-
-    //게임 정보 패널
+    // 게임 정보 패널
     private final JPanel gameInfoPanel = new JPanel();
-    private final JLabel playerCountLabel = new JLabel("Players: "); //플레이어 수 레이블
-    private final JLabel pieceCountLabel = new JLabel("Pieces per player: "); //플레이어당 말의 수 레이블
-    private final JLabel boardShapeLabel = new JLabel("Board shape: "); //보드의 형태 레이블
+    private final JLabel playerCountLabel = new JLabel("Players: "); // 플레이어 수 레이블
+    private final JLabel pieceCountLabel = new JLabel("Pieces per player: "); // 플레이어당 말의 수 레이블
+    private final JLabel boardShapeLabel = new JLabel("Board shape: "); // 보드의 형태 레이블
     
-    //게임 설정 패널
+    // 게임 설정 패널
     private final JPanel setupPanel = new JPanel();
-    private final JComboBox<Integer> boardShapeCombo = new JComboBox<>(new Integer[]{4, 5, 6}); //보드 형태 콤보박스
-    private final JComboBox<Integer> playerCountCombo = new JComboBox<>(new Integer[]{2, 3, 4}); //플레이어 수 콤보박스
-    private final JComboBox<Integer> pieceCountCombo = new JComboBox<>(new Integer[]{2, 3, 4, 5}); //플레이어당 말의 수 콤보박스
-
+    private final JComboBox<Integer> boardShapeCombo = new JComboBox<>(new Integer[]{4, 5, 6}); // 보드 형태 콤보박스
+    private final JComboBox<Integer> playerCountCombo = new JComboBox<>(new Integer[]{2, 3, 4}); // 플레이어 수 콤보박스
+    private final JComboBox<Integer> pieceCountCombo = new JComboBox<>(new Integer[]{2, 3, 4, 5}); // 플레이어당 말의 수 콤보박스
     
-    private final JButton startGameButton = new JButton("Start Game"); //게임 시작 버튼
-    private final JButton resetGameButton = new JButton("Reset Game"); //게임 초기화 버튼
+    private final JButton startGameButton = new JButton("Start Game"); // 게임 시작 버튼
+    private final JButton resetGameButton = new JButton("Reset Game"); // 게임 초기화 버튼
     
-
     public MainGamePanel(GameManager gameManager) {
         this.gameManager = gameManager;
         
         // 보드 패널 생성
         boardPanel = new BoardPanel(gameManager);
-        squareBoardUI = new SquareBoardUI(gameManager);
-        pentagonBoardUI = new PentagonBoardUI(gameManager);
-        hexagonBoardUI = new HexagonBoardUI(gameManager);
         controlPanel = new ControlPanel(gameManager);
         
         // 보드 UI를 담는 컨테이너 패널 생성
-        currentBoardContainer = new JPanel(new BorderLayout());
-        currentBoardContainer.add(boardPanel, BorderLayout.CENTER);
+        boardContainer = new JPanel(new BorderLayout());
+        boardContainer.add(boardPanel, BorderLayout.CENTER);
         
         // 옵저버 등록
         observer = new YutNoriSwingObserver(gameManager, this);
@@ -91,11 +75,11 @@ public class MainGamePanel extends JPanel {
         
         // 메인 패널에 컴포넌트 추가
         add(gameInfoPanel, BorderLayout.NORTH);
-        add(currentBoardContainer, BorderLayout.CENTER);
+        add(boardContainer, BorderLayout.CENTER);
         add(controlPanel, BorderLayout.EAST);
         add(setupPanel, BorderLayout.SOUTH);
         
-        // 정사각형 보드 패널에 말 선택 콜백 설정
+        // 보드 패널에 말 선택 콜백 설정
         boardPanel.setOnPieceSelected(piece -> {
             controlPanel.setSelectedPiece(piece);
             Map<Yut, BoardSpace> possibleMoves = new HashMap<>();
@@ -106,32 +90,6 @@ public class MainGamePanel extends JPanel {
                 }
             }
             boardPanel.showPossibleMoves(possibleMoves);
-        });
-        
-        // 정사각형 보드 패널에 말 선택 콜백 설정
-        squareBoardUI.setOnPieceSelected(piece -> {
-            controlPanel.setSelectedPiece(piece);
-            Map<Yut, BoardSpace> possibleMoves = new HashMap<>();
-            List<BoardSpace> locations = gameManager.getPossibleLocations(piece);
-            for (int i = 0; i < locations.size(); i++) {
-                if (locations.get(i) != null) {
-                    possibleMoves.put(Yut.values()[i], locations.get(i));
-                }
-            }
-            squareBoardUI.showPossibleMoves(possibleMoves);
-        });
-
-        //오각형 보드 패널에 말 선택 콜백 설정
-        pentagonBoardUI.setOnPieceSelected(piece -> {
-            controlPanel.setSelectedPiece(piece);
-            Map<Yut, BoardSpace> possibleMoves = new HashMap<>();
-            List<BoardSpace> locations = gameManager.getPossibleLocations(piece);
-            for (int i = 0; i < locations.size(); i++) {
-                if (locations.get(i) != null) {
-                    possibleMoves.put(Yut.values()[i], locations.get(i));
-                }
-            }
-            pentagonBoardUI.showPossibleMoves(possibleMoves);
         });
         
         // 버튼 클릭 이벤트 처리
@@ -148,28 +106,16 @@ public class MainGamePanel extends JPanel {
                     gameManager.setPieceCount(pieceCount);
                     gameManager.startGame();
                     
-                    // 선택된 보드 형태에 따라 보드 UI 전환
-                    currentBoardContainer.removeAll();
-                    if (boardShape == 4) {
-                        // 4각형 보드 UI 사용
-                        currentBoardContainer.add(squareBoardUI, BorderLayout.CENTER);
-                    } else if (boardShape == 5) {
-                        // 5각형 보드 UI 사용
-                        currentBoardContainer.add(pentagonBoardUI, BorderLayout.CENTER);
-                    } else if (boardShape == 6) {
-                        // 6각형 보드 UI 사용
-                        currentBoardContainer.add(hexagonBoardUI, BorderLayout.CENTER);
-                    } else {
-                        // 기타 보드 형태 UI 사용
-                        currentBoardContainer.add(boardPanel, BorderLayout.CENTER);
-                    }
-                    currentBoardContainer.revalidate();
-                    currentBoardContainer.repaint();
+                    // 보드 패널 업데이트 - 자동으로 N각형 보드를 그려줌
+                    boardContainer.removeAll();
+                    boardContainer.add(boardPanel, BorderLayout.CENTER);
+                    boardContainer.revalidate();
+                    boardContainer.repaint();
                     
                     updateGameInfo();
                     updateBoardPanel();
                     updateControlPanel();
-                    controlPanel.addMessage("Game started!");
+                    controlPanel.addMessage("Game started! Board shape: " + boardShape + "-sided");
                 } catch (Exception ex) {
                     JOptionPane.showMessageDialog(
                         MainGamePanel.this,
@@ -186,14 +132,12 @@ public class MainGamePanel extends JPanel {
             public void actionPerformed(ActionEvent e) {
                 gameManager.resetGame();
                 boardPanel.clearPossibleMoves();
-                squareBoardUI.clearPossibleMoves();
-                pentagonBoardUI.clearPossibleMoves();
                 
-                // 기본 보드 뷰로 초기화
-                currentBoardContainer.removeAll();
-                currentBoardContainer.add(boardPanel, BorderLayout.CENTER);
-                currentBoardContainer.revalidate();
-                currentBoardContainer.repaint();
+                // 보드 뷰 초기화
+                boardContainer.removeAll();
+                boardContainer.add(boardPanel, BorderLayout.CENTER);
+                boardContainer.revalidate();
+                boardContainer.repaint();
                 
                 updateGameInfo();
                 updateBoardPanel();
@@ -208,7 +152,7 @@ public class MainGamePanel extends JPanel {
         updateControlPanel();
     }
     
-    //게임 정보 패널 업데이트
+    // 게임 정보 패널 업데이트
     public void updateGameInfo() {
         if (gameManager.getState() == GameState.PLAYING) {
             playerCountLabel.setText("Players: " + gameManager.getPlayerCount());
@@ -241,7 +185,7 @@ public class MainGamePanel extends JPanel {
         }
     }
     
-    //턴 정보 표시 업데이트
+    // 턴 정보 표시 업데이트
     public void updateTurnInfo() {
         if (gameManager.getState() == GameState.PLAYING) {
             controlPanel.addMessage("Turn changed to Player " + gameManager.getCurrentPlayer());
@@ -249,8 +193,7 @@ public class MainGamePanel extends JPanel {
         updateGameInfo();
     }
     
-
-    //윷 정보 표시 업데이트
+    // 윷 정보 표시 업데이트
     public void updateYutInfo() {
         if (gameManager.getState() == GameState.PLAYING) {
             StringBuilder sb = new StringBuilder("Yut state changed: ");
@@ -270,32 +213,19 @@ public class MainGamePanel extends JPanel {
         }
     }
 
-    //보드 패널 업데이트
+    // 보드 패널 업데이트
     public void updateBoardPanel() {
-        // Check which board UI is currently active and repaint it
-        if (gameManager.getState() == GameState.PLAYING && gameManager.getBoard() instanceof RegularBoard) {
-            RegularBoard board = (RegularBoard) gameManager.getBoard();
-            if (board.getBoardAngle() == 4 && squareBoardUI != null) {
-                squareBoardUI.repaint();
-            } 
-            else if (board.getBoardAngle() == 5 && pentagonBoardUI != null) {
-                pentagonBoardUI.repaint();
-            }
-            else if (boardPanel != null) {
-                boardPanel.repaint();
-            }
-        } else if (boardPanel != null) {
+        if (boardPanel != null) {
             boardPanel.repaint();
         }
         
-        // 또한 컨테이너를 다시 그리기 위해 호출
-        if (currentBoardContainer != null) {
-            currentBoardContainer.repaint();
+        // 컨테이너도 다시 그리기
+        if (boardContainer != null) {
+            boardContainer.repaint();
         }
     }
     
-
-    //플레이어 정보 표시 업데이트
+    // 플레이어 정보 표시 업데이트
     public void updatePlayerInfo() {
         if (gameManager.getState() == GameState.PLAYING) {
             StringBuilder sb = new StringBuilder("Pieces updated: ");
@@ -312,7 +242,7 @@ public class MainGamePanel extends JPanel {
         }
     }
     
-    //컨트롤 패널 업데이트
+    // 컨트롤 패널 업데이트
     public void updateControlPanel() {
         controlPanel.updateUI();
     }
