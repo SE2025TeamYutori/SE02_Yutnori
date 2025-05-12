@@ -202,7 +202,7 @@ public class BoardPanel extends JPanel {
         double startAngle = Math.PI / n; // 시작 각도 (π/n)
         for (int v = 0; v < n; v++) {
             int vertexIdx = v * 5;
-            double angle = startAngle + (v * 2 * Math.PI / n);
+            double angle = startAngle - (v * 2 * Math.PI / n); // 반시계방향으로 각도 감소
             
             int x = (int) (center.x + radius * Math.cos(angle));
             int y = (int) (center.y + radius * Math.sin(angle));
@@ -229,20 +229,24 @@ public class BoardPanel extends JPanel {
         }
         
         // 방사형 노드 배치 (5*n ~ 7*n-1)
+        // 5번 노드부터 시작해서 0번 노드까지 차례로 대각선 노드 배치
         for (int v = 0; v < n; v++) {
-            int vertexIdx = v * 5;
+            // 현재 처리할 꼭짓점 인덱스 - 5번부터 시작하여 0번까지 (5, 10, 15, ..., 0)
+            int vertexIdx = ((v + 1) % n) * 5;
+            // 대각선 노드 인덱스 계산
             int outerIdx = 5 * n + 2 * v;     // 꼭짓점에 가까운 방사형 노드
             int innerIdx = outerIdx + 1;      // 중앙에 가까운 방사형 노드
-            
+
             Point vertexPoint = spaceLocations.get(indexedSpaces.get(vertexIdx));
-            
+
             // 꼭짓점과 중심 사이의 1/3, 2/3 지점에 방사형 노드 배치
             int x1 = (int) (vertexPoint.x + (center.x - vertexPoint.x) / 3.0);
             int y1 = (int) (vertexPoint.y + (center.y - vertexPoint.y) / 3.0);
-            
+
             int x2 = (int) (vertexPoint.x + 2 * (center.x - vertexPoint.x) / 3.0);
             int y2 = (int) (vertexPoint.y + 2 * (center.y - vertexPoint.y) / 3.0);
-            
+
+            // 작은 숫자 노드가 꼭짓점과 가깝게 배치
             spaceLocations.put(indexedSpaces.get(outerIdx), new Point(x1, y1));
             spaceLocations.put(indexedSpaces.get(innerIdx), new Point(x2, y2));
         }
@@ -267,7 +271,8 @@ public class BoardPanel extends JPanel {
 
         // 방사형 연결
         for (int v = 0; v < n; v++) {
-            int vertexIdx = v * 5;
+            // 현재 처리할 꼭짓점 인덱스 - 5번부터 시작하여 0번까지 (5, 10, 15, ..., 0)
+            int vertexIdx = ((v + 1) % n) * 5;
             int outerIdx = 5 * n + 2 * v;     // 꼭짓점에 가까운 방사형 노드
             int innerIdx = outerIdx + 1;      // 중앙에 가까운 방사형 노드
 
