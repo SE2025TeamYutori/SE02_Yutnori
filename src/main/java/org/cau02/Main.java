@@ -1,23 +1,22 @@
 package org.cau02;
 
 import org.cau02.controller.SwingGameController;
-import org.cau02.model.SwingGame;
+import org.cau02.model.GameManager;
 import org.cau02.view.SwingGameView;
 
 public class Main {
     public static void main(String[] args) {
         try {
-            // Default game settings
-            int boardAngle = 4; // Square board
-            int playerCount = 2;
-            int pieceCount = 2;
+            // 게임 매니저 생성
+            GameManager gameManager = new GameManager(4, 2, 2);
             
-            // Create MVC components for the Swing implementation
-            SwingGame gameModel = new SwingGame(boardAngle, playerCount, pieceCount);
-            SwingGameView gameView = new SwingGameView(gameModel.getGameManager());
-            SwingGameController gameController = new SwingGameController(gameModel, gameView);
+            // 뷰 생성 
+            SwingGameView gameView = new SwingGameView(gameManager);
             
-            // Start the game
+            // 컨트롤러 생성
+            SwingGameController gameController = new SwingGameController(gameManager, gameView);
+            
+            // 게임 시작
             gameController.startGame();
             
         } catch (Exception e) {

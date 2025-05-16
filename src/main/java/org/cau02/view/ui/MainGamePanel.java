@@ -12,7 +12,6 @@ import java.util.List;
 public class MainGamePanel extends JPanel {
 
     private final GameManager gameManager;
-    private final YutNoriSwingObserver observer;
     
     // 통합 보드 패널
     private BoardPanel boardPanel;
@@ -44,10 +43,6 @@ public class MainGamePanel extends JPanel {
         // 보드 UI를 담는 컨테이너 패널 생성
         boardContainer = new JPanel(new BorderLayout());
         boardContainer.add(boardPanel, BorderLayout.CENTER);
-        
-        // 옵저버 등록
-        observer = new YutNoriSwingObserver(gameManager, this);
-        gameManager.registerObserver(observer);
         
         // 메인 레이아웃 설정
         setLayout(new BorderLayout());
@@ -245,5 +240,14 @@ public class MainGamePanel extends JPanel {
     // 컨트롤 패널 업데이트
     public void updateControlPanel() {
         controlPanel.updateUI();
+    }
+    
+    // 패널 getter 메소드
+    public BoardPanel getBoardPanel() {
+        return boardPanel;
+    }
+    
+    public ControlPanel getControlPanel() {
+        return controlPanel;
     }
 }
