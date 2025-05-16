@@ -10,11 +10,19 @@ import java.util.*;
 import java.util.List;
 import java.util.function.Consumer;
 
-//보드 패널
+/**
+ * 통합 보드 패널 - N각형 보드를 자동으로 렌더링
+ */
 public class BoardPanel extends JPanel {
     private final GameManager gameManager;
     private final int boardSize = 500;
+    
+    // 각 보드 공간에 대한 화면 좌표 맵핑
     private final Map<BoardSpace, Point> spaceLocations = new HashMap<>();
+    
+    // 공간 간의 연결 정보를 저장하는 맵
+    private final Map<BoardSpace, List<BoardSpace>> spaceConnections = new HashMap<>();
+    
     private final Color[] playerColors = {
             Color.RED, Color.BLUE, Color.GREEN, Color.ORANGE
     };
@@ -23,7 +31,11 @@ public class BoardPanel extends JPanel {
     private Consumer<Piece> onPieceSelected = null;
     private final Map<Yut, java.util.List<BoardSpace>> possibleMoves = new HashMap<>();
 
-    //보드 패널 생성
+    /**
+     * 보드 패널 생성
+     * 
+     * @param gameManager 게임 관리자
+     */
     public BoardPanel(GameManager gameManager) {
         this.gameManager = gameManager;
         setPreferredSize(new Dimension(boardSize, boardSize));
@@ -37,11 +49,20 @@ public class BoardPanel extends JPanel {
         });
     }
 
-
+    /**
+     * 말 선택 콜백 설정
+     * 
+     * @param onPieceSelected 말 선택 시 호출될 콜백
+     */
     public void setOnPieceSelected(Consumer<Piece> onPieceSelected) {
         this.onPieceSelected = onPieceSelected;
     }
 
+    /**
+     * 현재 선택된 말 설정
+     * 
+     * @param piece 선택된 말
+     */
     public void setSelectedPiece(Piece piece) {
         this.selectedPiece = piece;
         repaint();
@@ -67,7 +88,9 @@ public class BoardPanel extends JPanel {
         repaint();
     }
 
-    //현재 표시된 "가능한 이동" 초기화
+    /**
+     * 현재 표시된 "가능한 이동" 초기화
+     */
     public void clearPossibleMoves() {
         possibleMoves.clear();
         repaint();
@@ -99,17 +122,12 @@ public class BoardPanel extends JPanel {
                 }
             }
         } catch (Exception e) {
+            // 예외 무시
         }
     }
 
     /**
      * 클릭된 위치가 말 근처에 있는지 확인
-     * 
-     * @param clickX 클릭 위치 x 좌표
-     * @param clickY 클릭 위치 y 좌표
-     * @param pieceX 말 위치 x 좌표
-     * @param pieceY 말 위치 y 좌표
-     * @return 클릭이 말 반경 내에 있는지 여부
      */
     private boolean isPointNearPiece(int clickX, int clickY, int pieceX, int pieceY) {
         int pieceRadius = 15;
@@ -130,6 +148,9 @@ public class BoardPanel extends JPanel {
         // 보드 레이아웃 계산
         calculateBoardLayout();
         
+        // 공간 간의 연결 선 그리기
+        drawSpaceConnections(g2d);
+        
         // 보드 공간 그리기
         drawBoardSpaces(g2d);
         
@@ -142,86 +163,260 @@ public class BoardPanel extends JPanel {
         g2d.dispose();
     }
 
-
-    //보드 레이아웃 계산
-    // 보드 중앙 기준 반지름 3/4 만큼 떨어진 위치에 공간 배치
-    // 보드 완성 전 임시 레이아웃
+    /**
+     * 보드 레이아웃 계산 - 다각형 수(N)에 따라 자동으로 보드 구성
+     */
     private void calculateBoardLayout() {
         spaceLocations.clear();
+        spaceConnections.clear();
         
         // 보드 정보 가져오기
         Board board = gameManager.getBoard();
         List<BoardSpace> spaces = board.getSpaces();
         
-        // 보드 중앙
-        int centerX = getWidth() / 2;
-        int centerY = getHeight() / 2;
+        // 다각형 수 가져오기
+        int n = 4; // 기본값: 정사각형
+        if (board instanceof RegularBoard) {
+            n = ((RegularBoard) board).getBoardAngle();
+        }
         
-        // 보드 반경 계산
-        int radius = Math.min(getWidth(), getHeight()) / 3;
+        // 패딩 및 반지름 계산
+        int padding = 60;
+        int diameter = Math.min(getWidth(), getHeight()) - 2 * padding;
+        int radius = diameter / 2;
         
-        // 주 경로 공간 위치 계산
-        int mainPathSpaceCount = spaces.size() - 2; // 준비 공간과 도착 공간 제외
+        // 중심 좌표
+        Point center = new Point(getWidth() / 2, getHeight() / 2);
         
-        for (int i = 0; i < spaces.size(); i++) {
-            BoardSpace space = spaces.get(i);
+        // 인덱스 매핑 생성
+        Map<Integer, BoardSpace> indexedSpaces = new HashMap<>();
+        for (int i = 0; i < Math.min(7 * n + 1, spaces.size()); i++) {
+            indexedSpaces.put(i, spaces.get(i));
+        }
+        
+        // 중앙 노드 (7*n)
+        int centerNodeIdx = 7 * n;
+        spaceLocations.put(indexedSpaces.get(centerNodeIdx), center);
+        
+        // 꼭짓점 노드 배치 (0, 5, 10, 15, ...)
+        double startAngle = Math.PI / n;
+
+        for (int v = 0; v < n; v++) {
+            int vertexIdx = v * 5;
+            double angle = startAngle + (v * 2 * Math.PI / n);
             
-            if (space == board.getReadySpace()) {
-                // 준비 공간은 하단
-                spaceLocations.put(space, new Point(centerX, centerY + radius + 30));
-            } else if (space == board.getGoalSpace()) {
-                // 도착 공간은 중앙
-                spaceLocations.put(space, new Point(centerX, centerY));
-            } else {
-                // 이 공간의 각도 계산
-                double angle = 2 * Math.PI * i / mainPathSpaceCount;
+            int x = (int) (center.x + radius * Math.sin(angle));
+            int y = (int) (center.y + radius * Math.cos(angle));
+            
+            spaceLocations.put(indexedSpaces.get(vertexIdx), new Point(x, y));
+        }
+        
+        // 변 내부 노드 배치 (각 꼭짓점 사이에 4개의 노드)
+        for (int v = 0; v < n; v++) {
+            int startIdx = v * 5;
+            int endIdx = ((v + 1) % n) * 5;
+            
+            Point startPoint = spaceLocations.get(indexedSpaces.get(startIdx));
+            Point endPoint = spaceLocations.get(indexedSpaces.get(endIdx));
+            
+            for (int k = 1; k <= 4; k++) {
+                double t = k / 5.0; // 0.2, 0.4, 0.6, 0.8
                 
-                // 위치 계산
-                int x = centerX + (int)(radius * Math.sin(angle));
-                int y = centerY - (int)(radius * Math.cos(angle));
+                int x = (int) (startPoint.x + t * (endPoint.x - startPoint.x));
+                int y = (int) (startPoint.y + t * (endPoint.y - startPoint.y));
                 
-                spaceLocations.put(space, new Point(x, y));
+                spaceLocations.put(indexedSpaces.get(startIdx + k), new Point(x, y));
+            }
+        }
+        
+        // 대각 노드 배치 (5*n ~ 7*n-1)
+        // 5번 노드부터 시작해서 0번 노드까지 차례로 대각선 노드 배치
+        for (int v = 0; v < n; v++) {
+            // 현재 처리할 꼭짓점 인덱스 - 5번부터 시작하여 0번까지 (5, 10, 15, ..., 0)
+            int vertexIdx = ((v + 1) % n) * 5;
+            // 대각선 노드 인덱스 계산
+            int outerIdx = 5 * n + 2 * v;     // 꼭짓점에 가까운 대각 노드
+            int innerIdx = outerIdx + 1;      // 중앙에 가까운 대각 노드
+
+            Point vertexPoint = spaceLocations.get(indexedSpaces.get(vertexIdx));
+
+            // 꼭짓점과 중심 사이의 1/3, 2/3 지점에 대각 노드 배치
+            int x1 = (int) (vertexPoint.x + (center.x - vertexPoint.x) / 3.0);
+            int y1 = (int) (vertexPoint.y + (center.y - vertexPoint.y) / 3.0);
+
+            int x2 = (int) (vertexPoint.x + 2 * (center.x - vertexPoint.x) / 3.0);
+            int y2 = (int) (vertexPoint.y + 2 * (center.y - vertexPoint.y) / 3.0);
+
+            // 작은 숫자 노드가 꼭짓점과 가깝게 배치
+            spaceLocations.put(indexedSpaces.get(outerIdx), new Point(x1, y1));
+            spaceLocations.put(indexedSpaces.get(innerIdx), new Point(x2, y2));
+        }
+        
+        // 연결 초기화
+        for (int i = 0; i < 7 * n + 1; i++) {
+            if (indexedSpaces.containsKey(i)) {
+                spaceConnections.put(indexedSpaces.get(i), new ArrayList<>());
+            }
+        }
+        
+        // 외곽 연결 (0 ~ 5*n-1)
+        for (int i = 0; i < 5 * n; i++) {
+            BoardSpace current = indexedSpaces.get(i);
+            BoardSpace next = indexedSpaces.get((i + 1) % (5 * n));
+            
+            spaceConnections.get(current).add(next);
+        }
+        
+        // 중앙 노드 가져오기
+        BoardSpace centerSpace = indexedSpaces.get(centerNodeIdx);
+
+        // 대각 연결
+        for (int v = 0; v < n; v++) {
+            // 현재 처리할 꼭짓점 인덱스 - 5번부터 시작하여 0번까지 (5, 10, 15, ..., 0)
+            int vertexIdx = ((v + 1) % n) * 5;
+            int outerIdx = 5 * n + 2 * v;     // 꼭짓점에 가까운 대각 노드
+            int innerIdx = outerIdx + 1;      // 중앙에 가까운 대각 노드
+
+            BoardSpace vertex = indexedSpaces.get(vertexIdx);
+            BoardSpace outer = indexedSpaces.get(outerIdx);
+            BoardSpace inner = indexedSpaces.get(innerIdx);
+
+            // 꼭짓점 -> 대각 -> 중앙 연결
+            spaceConnections.get(vertex).add(outer);
+            spaceConnections.get(outer).add(inner);
+            spaceConnections.get(inner).add(centerSpace);
+
+            // 양방향 연결
+            spaceConnections.get(outer).add(vertex);
+            spaceConnections.get(inner).add(outer);
+            spaceConnections.get(centerSpace).add(inner);
+        }
+        
+        // Ready 및 Goal 공간 처리
+        if (spaces.size() > 7 * n + 1) {
+            // Ready 공간 찾기
+            BoardSpace readySpace = board.getReadySpace();
+            if (readySpace != null) {
+                spaceLocations.put(readySpace, new Point(center.x, center.y + radius + 50));
+            }
+            
+            // Goal 공간 - 중앙에 배치
+            BoardSpace goalSpace = board.getGoalSpace();
+            if (goalSpace != null) {
+                spaceLocations.put(goalSpace, center);
             }
         }
     }
 
+    /**
+     * 공간 간의 연결 선 그리기
+     */
+    private void drawSpaceConnections(Graphics2D g2d) {
+        g2d.setColor(new Color(180, 180, 180));
+        g2d.setStroke(new BasicStroke(2.0f));
+        
+        // 모든 연결 그리기
+        for (Map.Entry<BoardSpace, List<BoardSpace>> entry : spaceConnections.entrySet()) {
+            BoardSpace fromSpace = entry.getKey();
+            Point fromPoint = spaceLocations.get(fromSpace);
+            
+            if (fromPoint != null) {
+                for (BoardSpace toSpace : entry.getValue()) {
+                    Point toPoint = spaceLocations.get(toSpace);
+                    if (toPoint != null) {
+                        g2d.drawLine(fromPoint.x, fromPoint.y, toPoint.x, toPoint.y);
+                    }
+                }
+            }
+        }
+    }
 
-    //보드 공간 그리기
+    /**
+     * 모든 보드 공간 그리기
+     */
     private void drawBoardSpaces(Graphics2D g2d) {
         if (gameManager == null || gameManager.getBoard() == null) return;
         
         Board board = gameManager.getBoard();
+        List<BoardSpace> spaces = board.getSpaces();
         
-        for (Map.Entry<BoardSpace, Point> entry : spaceLocations.entrySet()) {
-            BoardSpace space = entry.getKey();
-            Point point = entry.getValue();
+        // 다각형 수 가져오기
+        int n = 4; // 기본값: 정사각형
+        if (board instanceof RegularBoard) {
+            n = ((RegularBoard) board).getBoardAngle();
+        }
+        
+        int centerNodeIdx = 7 * n; // centerNodeIdx 선언 추가
+        
+        // 모든 공간 그리기
+        for (int i = 0; i < Math.min(7 * n + 1, spaces.size()); i++) {
+            BoardSpace space = spaces.get(i);
+            Point point = spaceLocations.get(space);
             
-            if (space == board.getReadySpace()) {
-                g2d.setColor(Color.LIGHT_GRAY);
-                g2d.fillRect(point.x - 40, point.y - 20, 80, 40);
-                g2d.setColor(Color.BLACK);
-                g2d.drawRect(point.x - 40, point.y - 20, 80, 40);
-                g2d.drawString("Ready", point.x - 15, point.y + 5);
-            } else if (space == board.getGoalSpace()) {
-                g2d.setColor(Color.YELLOW);
-                g2d.fillOval(point.x - 25, point.y - 25, 50, 50);
-                g2d.setColor(Color.BLACK);
-                g2d.drawOval(point.x - 25, point.y - 25, 50, 50);
-                g2d.drawString("Goal", point.x - 15, point.y + 5);
-            } else {
-                g2d.setColor(Color.WHITE);
-                g2d.fillOval(point.x - 15, point.y - 15, 30, 30);
-                g2d.setColor(Color.BLACK);
-                g2d.drawOval(point.x - 15, point.y - 15, 30, 30);
+            if (point != null) {
+                boolean isVertex = i % 5 == 0 && i < 5 * n; // 꼭짓점 노드
+                boolean isCenter = i == centerNodeIdx;      // 중앙 노드
                 
-                // Draw space index
-                int index = board.getSpaces().indexOf(space);
-                g2d.drawString(String.valueOf(index), point.x - 5, point.y + 5);
+                if (isVertex || isCenter) {
+                    // 특별 노드 (꼭짓점, 중앙) - 이중 원 그리기
+                    g2d.setColor(isCenter ? new Color(255, 220, 180) : new Color(255, 240, 200));
+                    g2d.fillOval(point.x - 20, point.y - 20, 40, 40);
+                    g2d.setColor(Color.BLACK);
+                    g2d.drawOval(point.x - 20, point.y - 20, 40, 40);
+                    
+                    g2d.setColor(isCenter ? new Color(255, 235, 200) : new Color(255, 250, 230));
+                    g2d.fillOval(point.x - 12, point.y - 12, 24, 24);
+                    g2d.setColor(Color.BLACK);
+                    g2d.drawOval(point.x - 12, point.y - 12, 24, 24);
+                    
+                    // 출발 지점 표시
+                    if (i == 0) {
+                        g2d.drawString("출발", point.x - 15, point.y + 30);
+                    }
+                } else {
+                    // 일반 노드 그리기
+                    g2d.setColor(Color.WHITE);
+                    g2d.fillOval(point.x - 12, point.y - 12, 24, 24);
+                    g2d.setColor(Color.BLACK);
+                    g2d.drawOval(point.x - 12, point.y - 12, 24, 24);
+                }
+                
+                // 노드 인덱스 그리기
+                g2d.setColor(Color.BLACK);
+                g2d.drawString(String.valueOf(i), point.x - 4, point.y + 4);
+            }
+        }
+        
+        // Ready 및 Goal 공간 그리기
+        if (spaces.size() > 7 * n + 1) {
+            BoardSpace readySpace = board.getReadySpace();
+            Point readyPoint = spaceLocations.get(readySpace);
+            
+            if (readyPoint != null) {
+                g2d.setColor(Color.LIGHT_GRAY);
+                g2d.fillRect(readyPoint.x - 40, readyPoint.y - 20, 80, 40);
+                g2d.setColor(Color.BLACK);
+                g2d.drawRect(readyPoint.x - 40, readyPoint.y - 20, 80, 40);
+                g2d.drawString("Ready", readyPoint.x - 15, readyPoint.y + 5);
+            }
+            
+            // Goal 공간은 중앙과 동일한 위치지만 다른 표현 사용
+            BoardSpace goalSpace = board.getGoalSpace();
+            Point goalPoint = spaceLocations.get(goalSpace);
+            
+            if (goalPoint != null && goalSpace != spaces.get(centerNodeIdx)) {
+                g2d.setColor(Color.YELLOW);
+                g2d.fillOval(goalPoint.x - 25, goalPoint.y - 25, 50, 50);
+                g2d.setColor(Color.BLACK);
+                g2d.drawOval(goalPoint.x - 25, goalPoint.y - 25, 50, 50);
+                g2d.drawString("Goal", goalPoint.x - 15, goalPoint.y + 5);
             }
         }
     }
 
-    //보드 위에 모든 말 그리기
+    /**
+     * 보드 위에 모든 말 그리기
+     */
     private void drawPieces(Graphics2D g2d) {
         if (gameManager == null || gameManager.getState() != GameState.PLAYING) return;
         
@@ -247,7 +442,7 @@ public class BoardPanel extends JPanel {
                     Point point = spaceLocations.get(location);
                     
                     if (point != null) {
-                        // 동일 위치에 여러 말 있을 때 오프셋 계산
+                        // 동일 위치에 여러 말이 있을 때 오프셋 계산
                         int offset = pieces.size() > 1 ? 8 : 0;
                         
                         for (int i = 0; i < pieces.size(); i++) {
@@ -274,10 +469,13 @@ public class BoardPanel extends JPanel {
                 }
             }
         } catch (Exception e) {
+            // 예외 무시
         }
     }
 
-    //가능한 이동 표시
+    /**
+     * 가능한 이동 표시
+     */
     private void drawPossibleMoves(Graphics2D g2d) {
         for (Map.Entry<Yut, List<BoardSpace>> entry : possibleMoves.entrySet()) {
             Yut yut = entry.getKey();
