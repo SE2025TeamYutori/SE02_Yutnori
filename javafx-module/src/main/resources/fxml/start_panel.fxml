@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<?import javafx.collections.FXCollections?>
+<VBox
+        id="mainBox"
+        xmlns="http://javafx.com/javafx"
+        xmlns:fx="http://javafx.com/fxml"
+        fx:controller="org.cau02.controller.StartPanelController"
+        stylesheets="/css/start_panel.css">
+    <Label id="title">윷 놀 이 게 임</Label>
+    <HBox id="bottomBox">
+        <VBox id="settingBox">
+            <HBox id="oneSettingLine">
+                <Label>게임판: </Label>
+                <ComboBox fx:id="gameBoardCombobox" value="사각형">
+                    <items>
+                        <FXCollections fx:factory="observableArrayList">
+                            <String fx:value="사각형" />
+                            <String fx:value="오각형" />
+                            <String fx:value="육각형" />
+                        </FXCollections>
+                    </items>
+                </ComboBox>
+            </HBox>
+            <HBox id="oneSettingLine">
+                <Label>플레이어 수: </Label>
+                <Spinner fx:id="playerCountSpinner" initialValue="4" min="2" max="4"/>
+            </HBox>
+            <HBox id="oneSettingLine">
+                <Label>인당 말 개수: </Label>
+                <Spinner fx:id="pieceCountSpinner" initialValue="5" min="2" max="5"/>
+            </HBox>
+        </VBox>
+        <Button id="startButton" onAction="#startGame">게임 시작!</Button>
+    </HBox>
+</VBox>

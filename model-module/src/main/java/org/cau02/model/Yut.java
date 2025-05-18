@@ -6,12 +6,12 @@ package org.cau02.model;
  * {@link Yut#BACKDO} {@link Yut#DO} {@link Yut#GE} {@link Yut#GEOL} {@link Yut#YUT} {@link Yut#MO}
  */
 public enum Yut {
-    BACKDO(-1),
-    DO(1),
-    GE(2),
-    GEOL(3),
-    YUT(4),
-    MO(5);
+    BACKDO(-1, "빽도"),
+    DO(1, "도"),
+    GE(2, "개"),
+    GEOL(3, "걸"),
+    YUT(4, "윷"),
+    MO(5, "모");
 
     final private int value;
     /**
@@ -22,7 +22,17 @@ public enum Yut {
         return value;
     }
 
-    Yut(int value){
+    final private String koreanName;
+    /**
+     * 해당 족보의 한글 이름을 반환합니다.
+     * @return 족보의 한글 이름
+     */
+    public String getKoreanName() {
+        return koreanName;
+    }
+
+    Yut(int value, String koreanName){
         this.value = value;
+        this.koreanName = koreanName;
     }
 }

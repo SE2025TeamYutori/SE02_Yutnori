@@ -1,0 +1,23 @@
+#mainPanel {
+    -fx-alignment: center;
+    -fx-spacing: 80;
+    -fx-max-width: 640;
+    -fx-max-height: 360;
+    -fx-border-color: black;
+    -fx-background-color: white;
+}
+
+#winnerTitleLabel {
+    -fx-font-size: 50;
+    -fx-font-weight: bold;
+}
+
+#buttonBox {
+    -fx-alignment: center;
+    -fx-spacing: 30;
+}
+
+#buttonBox Button {
+    -fx-font-size: 30;
+    -fx-min-width: 200;
+}

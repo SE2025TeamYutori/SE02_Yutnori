@@ -1,0 +1,19 @@
+.text {
+    -fx-font-family: "메이플스토리";
+}
+
+#player0 {
+    -fx-fill: IndianRed;
+}
+
+#player1 {
+    -fx-fill: CornflowerBlue;
+}
+
+#player2 {
+    -fx-fill: DarkKhaki;
+}
+
+#player3 {
+    -fx-fill: MediumSeaGreen;
+}

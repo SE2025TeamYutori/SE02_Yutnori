@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<?import javafx.scene.shape.Circle?>
+<VBox
+        id="mainPanel"
+        xmlns="http://javafx.com/javafx"
+        xmlns:fx="http://javafx.com/fxml"
+        fx:controller="org.cau02.controller.YutSelectPanelController"
+        stylesheets="/css/yut_select_panel.css">
+    <Label id="title">선택 윷 던지기</Label>
+    <GridPane id="yutSelectBox">
+        <StackPane GridPane.rowIndex="0" GridPane.columnIndex="0">
+            <Circle id="backdo" radius="50" onMouseClicked="#throwSelectYut"/>
+            <Label mouseTransparent="true">빽도</Label>
+        </StackPane>
+        <StackPane GridPane.rowIndex="0" GridPane.columnIndex="1">
+            <Circle id="do" radius="50" onMouseClicked="#throwSelectYut"/>
+            <Label mouseTransparent="true">도</Label>
+        </StackPane>
+        <StackPane GridPane.rowIndex="0" GridPane.columnIndex="2">
+            <Circle id="ge" radius="50" onMouseClicked="#throwSelectYut"/>
+            <Label mouseTransparent="true">개</Label>
+        </StackPane>
+        <StackPane GridPane.rowIndex="1" GridPane.columnIndex="0">
+            <Circle id="geol" radius="50" onMouseClicked="#throwSelectYut"/>
+            <Label mouseTransparent="true">걸</Label>
+        </StackPane>
+        <StackPane GridPane.rowIndex="1" GridPane.columnIndex="1">
+            <Circle id="yut" radius="50" onMouseClicked="#throwSelectYut"/>
+            <Label mouseTransparent="true">윷</Label>
+        </StackPane>
+        <StackPane GridPane.rowIndex="1" GridPane.columnIndex="2">
+            <Circle id="mo" radius="50" onMouseClicked="#throwSelectYut"/>
+            <Label mouseTransparent="true">모</Label>
+        </StackPane>
+    </GridPane>
+</VBox>

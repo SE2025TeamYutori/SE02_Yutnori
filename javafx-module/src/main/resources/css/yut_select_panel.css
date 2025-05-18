@@ -1,0 +1,28 @@
+#mainPanel {
+    -fx-alignment: center;
+    -fx-spacing: 30;
+    -fx-max-width: 640;
+    -fx-max-height: 360;
+    -fx-border-color: black;
+    -fx-background-color: white;
+}
+
+#title {
+    -fx-font-size: 30;
+    -fx-font-weight: bold;
+}
+
+#yutSelectBox {
+    -fx-alignment: center;
+    -fx-hgap: 40;
+    -fx-vgap: 20;
+}
+
+#yutSelectBox Circle {
+    -fx-stroke: black;
+    -fx-stroke-width: 3;
+}
+
+#yutSelectBox Label {
+    -fx-font-size: 35;
+}

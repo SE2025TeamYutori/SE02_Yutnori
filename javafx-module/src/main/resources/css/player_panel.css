@@ -1,0 +1,59 @@
+#mainPanel {
+    -fx-alignment: top-left;
+    -fx-spacing: 30;
+    -fx-pref-width: 480;
+    -fx-pref-height: 270;
+    -fx-padding: 10;
+}
+
+.nowTurn {
+    -fx-border-color: CornflowerBlue;
+    -fx-background-color: LightGoldenrodYellow;
+    -fx-border-width: 3;
+}
+
+.notNowTurn {
+    -fx-border-color: black;
+    -fx-border-width: 1;
+}
+
+#playerBox {
+    -fx-alignment: center-left;
+    -fx-spacing: 10;
+}
+
+
+#playerLabel {
+    -fx-font-size: 30;
+    -fx-font-weight: bold;
+}
+
+#readyBox {
+    -fx-alignment: left;
+    -fx-spacing: 10;
+}
+
+#readyBox > Label {
+    -fx-font-size: 20;
+}
+
+#readyPieceBoxBox {
+    -fx-alignment: center-left;
+    -fx-spacing: 10;
+    -fx-padding: 0 0 0 10;
+}
+
+#readyPieceBoxBox > Button {
+    -fx-pref-width: 100;
+    -fx-pref-height: 30;
+    -fx-font-size: 15;
+}
+
+#readyPieceBox {
+    -fx-alignment: bottom-center;
+    -fx-spacing: -20;
+}
+
+Circle {
+    -fx-stroke: black;
+}
