@@ -6,20 +6,21 @@
 
 .playerBox {
     -fx-alignment: top-center;
-    -fx-spacing: 30;
+    -fx-spacing: 10;
 }
 
 #playerBoxLeft {
-    -fx-padding: 30 10 0 30;
+    -fx-padding: 10 10 0 10;
 }
 
 #playerBoxRight {
-    -fx-padding: 30 30 0 10;
+    -fx-padding: 10 10 0 10;
 }
 
 #middleBox {
-    -fx-alignment: center;
-    -fx-spacing: 30;
+    -fx-alignment: top-center;
+    -fx-spacing: 20;
+    -fx-padding: 10 0 0 0;
 }
 
 #yutBox {

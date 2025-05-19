@@ -7,7 +7,6 @@ import javafx.scene.layout.HBox;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
 import org.cau02.controller.boardController.BoardController;
-import org.cau02.model.Board;
 import org.cau02.model.GameManager;
 
 import java.util.ArrayList;
@@ -17,7 +16,6 @@ public class PlayerPanelController {
     private final GameManager gm;
     private final int playerId;
     private final BoardController boardController;
-
 
     @FXML private HBox readyPieceBox;
 

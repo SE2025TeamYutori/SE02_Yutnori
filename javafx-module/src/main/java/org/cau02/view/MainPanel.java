@@ -1,7 +1,6 @@
 package org.cau02.view;
 
 import javafx.fxml.FXMLLoader;
-import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import org.cau02.controller.MainPanelController;
 import org.cau02.model.GameManager;

@@ -21,7 +21,8 @@ public abstract class BoardController {
     private final List<Button> markers = new ArrayList<>();
     private final List<Node> pieces = new ArrayList<>();
 
-    @FXML protected AnchorPane mainPanel;
+    @FXML
+    protected AnchorPane mainPanel;
 
     BoardController(GameManager gm) {
         this.gm = gm;

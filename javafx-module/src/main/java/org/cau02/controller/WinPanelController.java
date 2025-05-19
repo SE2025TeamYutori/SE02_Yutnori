@@ -8,7 +8,7 @@ import javafx.scene.control.Label;
 import org.cau02.view.StartPanel;
 
 public class WinPanelController {
-    private int winnerId;
+    private final int winnerId;
 
     @FXML private Label winnerTitleLabel;
 

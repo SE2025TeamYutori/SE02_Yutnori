@@ -4,14 +4,12 @@ import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
-import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.Priority;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.shape.Circle;
@@ -24,7 +22,8 @@ import org.cau02.model.YutNoriObserver;
 import org.cau02.view.PlayerPanel;
 import org.cau02.view.WinPanel;
 import org.cau02.view.YutSelectPanel;
-import org.cau02.view.boardView.SquareBoardPanel;
+import org.cau02.view.boardView.BoardPanel;
+import org.cau02.view.boardView.RegularBoardPanel;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,6 +31,7 @@ import java.util.Objects;
 
 public class MainPanelController implements YutNoriObserver {
     private final GameManager gm;
+
     @FXML private StackPane rootStackPane;
     @FXML private Label yutCountLabel;
     @FXML private Button throwRandomYutButton;
@@ -44,13 +44,11 @@ public class MainPanelController implements YutNoriObserver {
 
     @FXML private VBox playerBoxRight;
 
-
     @FXML private StackPane yutResultPane;
     @FXML private ImageView yutResultView;
     @FXML private Label yutResultLabel;
 
     private Timeline yutResultTimer;
-
 
     private final List<StackPane> yutResultPanes = new ArrayList<>(6);
     private final List<PlayerPanel> playerPanels = new ArrayList<>(4);
@@ -80,21 +78,10 @@ public class MainPanelController implements YutNoriObserver {
 
     @FXML
     private void initialize() {
-        BoardController boardController = null;
         initializeYutResults();
-        switch (((RegularBoard)(gm.getBoard())).getBoardAngle()) {
-            case 4:
-                SquareBoardPanel boardPanel = new SquareBoardPanel(gm);
-                middleBox.getChildren().addFirst(boardPanel.getRoot());
-                boardController = boardPanel.getController();
-                break;
-
-            case 5:
-                break;
-
-            case 6:
-                break;
-        }
+        BoardPanel boardPanel = new RegularBoardPanel(gm, ((RegularBoard)(gm.getBoard())).getBoardAngle());
+        middleBox.getChildren().addFirst(boardPanel.getRoot());
+        BoardController boardController = boardPanel.getController();
 
         playerPanels.add(new PlayerPanel(gm, 0, boardController));
         playerPanels.getFirst().getRoot().getStyleClass().clear();
@@ -132,7 +119,7 @@ public class MainPanelController implements YutNoriObserver {
 
     void showYutImage(Yut yut) {
         yutResultPane.setVisible(true);
-        Image yutImage = new Image(getClass().getResourceAsStream("/yut_images/" + yut.name() + ".png"));
+        Image yutImage = new Image(getClass().getResourceAsStream("/images/yut_images/" + yut.name() + ".png"));
         yutResultView.setImage(yutImage);
         yutResultLabel.setText(yut.getKoreanName() + "!");
 
@@ -159,7 +146,6 @@ public class MainPanelController implements YutNoriObserver {
 
     @Override
     public void onTurnChanged() {
-        System.out.println("onTurnChanged");
         for (int i = 0; i < gm.getPlayerCount(); i++) {
             if (gm.getCurrentPlayer() == i) {
                 playerPanels.get(i).getRoot().getStyleClass().clear();

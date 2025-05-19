@@ -3,6 +3,7 @@ package org.cau02;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
+import javafx.scene.text.Font;
 import javafx.stage.Stage;
 import org.cau02.view.StartPanel;
 
@@ -16,11 +17,13 @@ public class App extends Application {
         Scene scene = new Scene(root.getRoot());
         scene.setRoot(root.getRoot());
 
-        String cssPath = getClass().getResource("/css/style.css").toExternalForm();
-        scene.getStylesheets().add(cssPath);
+        scene.getStylesheets().add(Objects.requireNonNull(getClass().getResource("/css/style.css")).toExternalForm());
+
+        Font.loadFont(getClass().getResourceAsStream("/fonts/MaplestoryLight.ttf"), 24);
+        Font.loadFont(getClass().getResourceAsStream("/fonts/MaplestoryBold.ttf"), 24);
 
         primaryStage.setTitle("윷놀이 게임!");
-        Image icon = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/favicon.png")));
+        Image icon = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/images/favicon.png")));
         primaryStage.getIcons().add(icon);
         primaryStage.setScene(scene);
         primaryStage.show();

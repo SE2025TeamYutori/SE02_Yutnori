@@ -2,7 +2,6 @@ package org.cau02.view;
 
 import javafx.fxml.FXMLLoader;
 import javafx.scene.layout.VBox;
-import org.cau02.controller.MainPanelController;
 import org.cau02.controller.WinPanelController;
 
 public class WinPanel {
