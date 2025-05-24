@@ -1,0 +1,78 @@
+#mainBox {
+    -fx-pref-width: 1280;
+    -fx-pref-height: 720;
+    -fx-alignment: center;
+}
+
+.playerBox {
+    -fx-alignment: top-center;
+    -fx-spacing: 10;
+}
+
+#playerBoxLeft {
+    -fx-padding: 10 10 0 10;
+}
+
+#playerBoxRight {
+    -fx-padding: 10 10 0 10;
+}
+
+#middleBox {
+    -fx-alignment: top-center;
+    -fx-spacing: 20;
+    -fx-padding: 10 0 0 0;
+}
+
+#yutBox {
+    -fx-pref-width: 0;
+    -fx-alignment: center;
+    -fx-spacing: 20;
+}
+
+#yutBox Button {
+    -fx-min-width: 100;
+}
+
+#yutResult > Circle {
+    -fx-fill: white;
+    -fx-stroke: black;
+    -fx-stroke-width: 3;
+}
+
+#yutResult > Label {
+    -fx-font-size: 20;
+    -fx-font-weight: bold;
+}
+
+#middleBox > * {
+    -fx-max-width: 100%;
+}
+
+#yutResultLabel {
+    -fx-font-size: 100;
+    -fx-font-weight: bold;
+}
+
+#backdo {
+    -fx-fill: RosyBrown;
+}
+
+#do {
+    -fx-fill: SteelBlue;
+}
+
+#ge {
+    -fx-fill: SlateGray;
+}
+
+#geol {
+    -fx-fill: DarkOliveGreen;
+}
+
+#yut {
+    -fx-fill: GoldenRod;
+}
+
+#mo {
+    -fx-fill: MediumPurple;
+}

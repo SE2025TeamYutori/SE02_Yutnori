@@ -1,0 +1,20 @@
+
+.text {
+    -fx-font-family: "Maplestory";
+}
+
+#player0 {
+    -fx-fill: IndianRed;
+}
+
+#player1 {
+    -fx-fill: CornflowerBlue;
+}
+
+#player2 {
+    -fx-fill: DarkKhaki;
+}
+
+#player3 {
+    -fx-fill: MediumSeaGreen;
+}

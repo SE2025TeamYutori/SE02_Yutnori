@@ -1,0 +1,48 @@
+#mainBox {
+    -fx-alignment: top-center;
+    -fx-spacing: 100;
+    -fx-pref-width: 1280;
+    -fx-pref-height: 720;
+}
+
+#title {
+    -fx-padding: 130 0 0 0;
+    -fx-font-size: 120;
+    -fx-font-weight: bold;
+}
+
+#bottomBox {
+    -fx-alignment: center;
+    -fx-spacing: 100;
+}
+
+#settingBox {
+    -fx-alignment: center-left;
+    -fx-spacing: 10;
+    -fx-font-size: 20;
+}
+
+#settingBox > #oneSettingLine {
+    -fx-alignment: baseline-left;
+    -fx-spacing: 10;
+    -fx-pref-width: 300;
+}
+
+#settingBox > #oneSettingLine > Label {
+    -fx-min-width: 120;
+}
+
+#settingBox > #oneSettingLine > ComboBox {
+    -fx-min-width: 180;
+}
+
+#startButton {
+    -fx-pref-width: 300;
+    -fx-pref-height: 80;
+    -fx-border-color: black;
+    -fx-border-width: 3;
+    -fx-border-radius: 20;
+    -fx-background-radius: 20;
+    -fx-font-size: 35;
+    -fx-font-weight: bold;
+}

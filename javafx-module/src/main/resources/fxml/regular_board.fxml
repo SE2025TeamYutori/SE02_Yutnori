@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.*?>
+
+<AnchorPane fx:id="mainPanel"
+            xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="org.cau02.controller.boardController.RegularBoardController"
+            stylesheets="@/css/regular_board.css"><!--
+    <Shape fx:id="boardPolygon"/>
+    <Line fx:id="DiagLine1"/>
+    ...
+    -->
+</AnchorPane>

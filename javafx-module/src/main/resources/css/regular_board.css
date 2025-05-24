@@ -1,0 +1,13 @@
+#mainPanel {
+    -fx-border-color: black;
+}
+
+#boardShape {
+    -fx-fill: transparent;
+    -fx-stroke: black
+}
+
+Circle {
+    -fx-fill: white;
+    -fx-stroke: black;
+}

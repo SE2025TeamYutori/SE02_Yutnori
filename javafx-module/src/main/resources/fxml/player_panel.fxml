@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<?import javafx.scene.shape.Rectangle?>
+<VBox
+        id="mainPanel"
+        styleClass="notNowTurn"
+        xmlns="http://javafx.com/javafx"
+        xmlns:fx="http://javafx.com/fxml"
+        fx:controller="org.cau02.controller.PlayerPanelController"
+        stylesheets="/css/player_panel.css">
+    <HBox id="playerBox">
+        <Rectangle fx:id="playerColorRectangle" width="32" height="32"/>
+        <Label fx:id="playerLabel"></Label></HBox>
+    <VBox id="readyBox">
+        <Label>대기 말: </Label>
+        <HBox id="readyPieceBoxBox">
+            <HBox fx:id="readyPieceBox"><!--
+            {for (int i = 0; i < gm.getPieceCount(); i++)}
+                <Circle/>
+            -->
+            </HBox>
+            <Button fx:id="moveNewPieceButton" onAction="#showPossibleLocationsWithNewPiece" visible="false">새 말 출발</Button>
+        </HBox>
+    </VBox>
+</VBox>
