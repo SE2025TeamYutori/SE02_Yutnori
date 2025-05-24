@@ -222,7 +222,7 @@ public class MainPanel extends JPanel implements YutNoriObserver {
         yutResultTextLabel.setText(yut.getKoreanName() + "!");
         yutResultPane.setVisible(true);
 
-        Timer timer = new Timer(1000, e -> {
+        Timer timer = new Timer(700, e -> {
             yutResultPane.setVisible(false);
             yutResultImageLabel.setIcon(null);
             yutResultTextLabel.setText("");
