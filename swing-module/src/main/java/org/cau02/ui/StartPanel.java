@@ -4,7 +4,6 @@ import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import org.cau02.model.GameManager;
-import org.cau02.ui.*;
 
 
 public class StartPanel extends JPanel {

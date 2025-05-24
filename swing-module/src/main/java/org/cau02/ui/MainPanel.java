@@ -167,6 +167,11 @@ public class MainPanel extends JPanel implements YutNoriObserver {
         layeredPane.add(yutResultPane, JLayeredPane.MODAL_LAYER);
         
         add(layeredPane, BorderLayout.CENTER);
+        
+        // 게임 시작 시 첫 번째 플레이어 턴 표시 초기화
+        if (gm.getPlayerCount() > 0) {
+            playerPanels.get(0).updateTurn(true);
+        }
     }
 
     private void initializeYutResults() {
