@@ -28,7 +28,7 @@ public abstract class BoardController {
         this.gm = gm;
     }
 
-    public void showPossibleLocations() {
+    public void showPossibleLocationsOfNewPiece() {
         mainPanel.getChildren().removeAll(markers);
         markers.clear();
 
@@ -69,7 +69,7 @@ public abstract class BoardController {
                     circle.setId("player" + i);
                     circle.setOnMouseClicked(event -> {
                         if (Integer.parseInt(circle.getId().replace("player", "")) == gm.getCurrentPlayer()) {
-                            showPossibleLocations2(p);
+                            showPossibleLocations(p);
                         }
                     });
 
@@ -88,7 +88,7 @@ public abstract class BoardController {
         mainPanel.getChildren().addAll(pieces);
     }
 
-    private void showPossibleLocations2(Piece piece) {
+    private void showPossibleLocations(Piece piece) {
         mainPanel.getChildren().removeAll(markers);
         markers.clear();
 
