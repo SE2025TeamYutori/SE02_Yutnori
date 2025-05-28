@@ -51,7 +51,7 @@ public class PlayerPanelController {
 
     @FXML
     private void showPossibleLocationsWithNewPiece() {
-        boardController.showPossibleLocations();
+        boardController.showPossibleLocationsOfNewPiece();
     }
 
     public void enableMoveNewPieceButton() {
