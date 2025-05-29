@@ -222,7 +222,7 @@ public class MainPanel extends JPanel implements YutNoriObserver {
     }
 
     public void showYutImage(Yut yut) {
-        ImageIcon icon = new ImageIcon(getClass().getResource("/yut_images/" + yut.name() + ".png"));
+        ImageIcon icon = new ImageIcon(getClass().getResource("/yut_images/" + yut.name().toLowerCase() + ".png"));
         yutResultImageLabel.setIcon(icon);
         yutResultTextLabel.setText(yut.getKoreanName() + "!");
         yutResultPane.setVisible(true);

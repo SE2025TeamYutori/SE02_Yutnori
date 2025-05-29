@@ -133,7 +133,7 @@ public abstract class AbstractBoardPanel extends JPanel {
                     button.setForeground(Color.WHITE);
                 }
                 
-                button.setFont(new Font("Arial", Font.BOLD, 12));
+                button.setFont(new Font("맑은 고딕", Font.BOLD, 12));
                 button.setOpaque(true);
                 button.setBorderPainted(true);
                 button.setFocusPainted(false);
@@ -167,7 +167,7 @@ public abstract class AbstractBoardPanel extends JPanel {
                 
                 JButton button = new JButton("출발");
                 button.setBounds(buttonLocation.x - 25, buttonLocation.y - 35, 50, 25);
-                button.setFont(new Font("Arial", Font.BOLD, 12));
+                button.setFont(new Font("맑은 고딕", Font.BOLD, 12));
                 button.setBackground(Color.GREEN);
                 button.setForeground(Color.BLACK);
                 button.setOpaque(true);

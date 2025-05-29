@@ -119,7 +119,7 @@ public class MainPanelController implements YutNoriObserver {
 
     void showYutImage(Yut yut) {
         yutResultPane.setVisible(true);
-        Image yutImage = new Image(getClass().getResourceAsStream("/images/yut_images/" + yut.name() + ".png"));
+        Image yutImage = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/images/yut_images/" + yut.name().toLowerCase() + ".png")));
         yutResultView.setImage(yutImage);
         yutResultLabel.setText(yut.getKoreanName() + "!");
 
