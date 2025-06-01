@@ -4,11 +4,11 @@ import javax.swing.*;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
-import org.cau02.model.GameManager;
+import org.cau02.controller.PlayerController;
 import org.cau02.ui.board.RegularBoardPanel;
 
 public class PlayerPanel extends JPanel {
-    private final GameManager gm;
+    private final PlayerController playerController;
     private final int playerId;
 
 
@@ -17,8 +17,8 @@ public class PlayerPanel extends JPanel {
     private final JButton moveNewPieceButton;
     private final List<JPanel> readyPieces = new ArrayList<>();
 
-    public PlayerPanel(GameManager gm, int playerId, RegularBoardPanel boardPanel) {
-        this.gm = gm;
+    public PlayerPanel(PlayerController playerController, int playerId, RegularBoardPanel boardPanel) {
+        this.playerController = playerController;
         this.playerId = playerId;
 
         setLayout(new BorderLayout());
@@ -77,7 +77,7 @@ public class PlayerPanel extends JPanel {
 
     private void initializePieces() {
         readyPieces.clear();
-        for (int i = 0; i < gm.getPieceCount(); i++) {
+        for (int i = 0; i < playerController.getPieceCount(); i++) {
             JPanel piece = new JPanel() {
                 @Override
                 protected void paintComponent(Graphics g) {
@@ -101,9 +101,9 @@ public class PlayerPanel extends JPanel {
         
         int count;
         try {
-            count = gm.getReadyPiecesCount(playerId);
+            count = playerController.getReadyPiecesCount(playerId);
         } catch (IllegalStateException e) {
-            count = gm.getPieceCount(); // 게임 시작 전이면 전체 말 개수
+            count = playerController.getPieceCount(); // 게임 시작 전이면 전체 말 개수
         }
         
         // 말들을 절반씩 겹치면서 배치

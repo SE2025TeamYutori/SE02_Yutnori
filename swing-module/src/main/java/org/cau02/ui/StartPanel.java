@@ -3,7 +3,7 @@ package org.cau02.ui;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
-import org.cau02.model.GameManager;
+import org.cau02.controller.GameController;
 
 
 public class StartPanel extends JPanel {
@@ -85,8 +85,10 @@ public class StartPanel extends JPanel {
             int playerCount = getPlayerCount();
             int pieceCount = getPieceCount();
 
-            GameManager gameManager = new GameManager(boardAngle, playerCount, pieceCount);
-            JPanel mainPanel = new MainPanel(gameManager); // Swing용 MainPanel
+            GameController gameController = new GameController();
+            gameController.initializeGame(boardAngle, playerCount, pieceCount);
+            
+            JPanel mainPanel = new MainPanel(gameController);
 
             // 부모 프레임 찾아서 contentPane 교체
             SwingUtilities.getWindowAncestor(this).setVisible(false);
@@ -97,7 +99,7 @@ public class StartPanel extends JPanel {
             frame.setLocationRelativeTo(null);
             frame.setVisible(true);
 
-            gameManager.startGame();
+            gameController.startGame();
         });
     }
 
