@@ -4,14 +4,19 @@ import javax.swing.*;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
-import org.cau02.model.GameManager;
-import org.cau02.model.RegularBoard;
+import org.cau02.controller.GameController;
+import org.cau02.controller.YutController;
+import org.cau02.controller.PlayerController;
+import org.cau02.controller.BoardController;
 import org.cau02.model.Yut;
 import org.cau02.model.YutNoriObserver;
 import org.cau02.ui.board.RegularBoardPanel;
 
 public class MainPanel extends JPanel implements YutNoriObserver {
-    private final GameManager gm;
+    private final GameController gameController;
+    private final YutController yutController;
+    private final PlayerController playerController;
+    private final BoardController boardController;
 
     private JLabel yutCountLabel;
     private JButton throwRandomYutButton, throwSelectYutButton;
@@ -23,9 +28,14 @@ public class MainPanel extends JPanel implements YutNoriObserver {
     private final List<PlayerPanel> playerPanels = new ArrayList<>();
     private RegularBoardPanel boardPanel;
 
-    public MainPanel(GameManager gm) {
-        this.gm = gm;
-        gm.registerObserver(this);
+    public MainPanel(GameController gameController) {
+        this.gameController = gameController;
+        this.yutController = new YutController(gameController);
+        this.playerController = new PlayerController(gameController);
+        this.boardController = new BoardController(gameController);
+        
+        gameController.setMainPanel(this);
+        gameController.getGameManager().registerObserver(this);
 
         setLayout(new BorderLayout());
         setPreferredSize(new Dimension(1280, 850));
@@ -49,7 +59,7 @@ public class MainPanel extends JPanel implements YutNoriObserver {
         middleBox.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 20));
 
         // 게임판 영역
-        boardPanel = new RegularBoardPanel(gm, ((RegularBoard)gm.getBoard()).getBoardAngle());
+        boardPanel = new RegularBoardPanel(gameController.getGameManager(), boardController.getBoardAngle());
         JPanel boardContainer = new JPanel(new GridBagLayout());
         boardContainer.add(boardPanel.getPanel());
         boardContainer.setPreferredSize(new Dimension(600, 600));
@@ -81,7 +91,7 @@ public class MainPanel extends JPanel implements YutNoriObserver {
         throwSelectYutButton.setAlignmentX(Component.CENTER_ALIGNMENT);
 
         throwRandomYutButton.addActionListener(e -> {
-            Yut yut = gm.throwRandomYut();
+            Yut yut = yutController.throwRandomYut();
             showYutImage(yut);
         });
 
@@ -101,8 +111,8 @@ public class MainPanel extends JPanel implements YutNoriObserver {
         middleBox.add(buttonPanel);
 
         // 플레이어 추가
-        for (int i = 0; i < gm.getPlayerCount(); i++) {
-            PlayerPanel panel = new PlayerPanel(gm, i, boardPanel);
+        for (int i = 0; i < gameController.getPlayerCount(); i++) {
+            PlayerPanel panel = new PlayerPanel(playerController, i, boardPanel);
             panel.updateReadyPieces(); // 초기 대기 말 표시
             playerPanels.add(panel);
             if (i % 2 == 0) {
@@ -169,7 +179,7 @@ public class MainPanel extends JPanel implements YutNoriObserver {
         add(layeredPane, BorderLayout.CENTER);
         
         // 게임 시작 시 첫 번째 플레이어 턴 표시 초기화
-        if (gm.getPlayerCount() > 0) {
+        if (gameController.getPlayerCount() > 0) {
             playerPanels.get(0).updateTurn(true);
         }
     }
@@ -210,7 +220,7 @@ public class MainPanel extends JPanel implements YutNoriObserver {
     }
 
     private void openYutSelectPanel() {
-        YutSelectPanel yutSelectPanel = new YutSelectPanel(gm, this);
+        YutSelectPanel yutSelectPanel = new YutSelectPanel(yutController, this);
         
         // 모달 다이얼로그로 표시
         JDialog dialog = new JDialog((JFrame) SwingUtilities.getWindowAncestor(this), "윷 선택", true);
@@ -241,7 +251,7 @@ public class MainPanel extends JPanel implements YutNoriObserver {
         // 승리 메시지 표시
         int result = JOptionPane.showConfirmDialog(
             this, 
-            "플레이어 " + (gm.getWinner() + 1) + " 승리!\n\n메인화면으로 돌아가시겠습니까?", 
+            "플레이어 " + (gameController.getWinner() + 1) + " 승리!\n\n메인화면으로 돌아가시겠습니까?", 
             "게임 종료", 
             JOptionPane.OK_CANCEL_OPTION,
             JOptionPane.INFORMATION_MESSAGE
@@ -272,11 +282,11 @@ public class MainPanel extends JPanel implements YutNoriObserver {
     @Override
     public void onTurnChanged() {
         for (int i = 0; i < playerPanels.size(); i++) {
-            boolean isCurrentPlayer = gm.getCurrentPlayer() == i;
+            boolean isCurrentPlayer = gameController.getCurrentPlayer() == i;
             playerPanels.get(i).updateTurn(isCurrentPlayer);
             
             // 새 말 출발 버튼 표시/숨김
-            if (isCurrentPlayer && gm.getReadyPiecesCount(i) > 0 && gm.getCurrentMoveCount() > 0) {
+            if (playerController.canMoveNewPiece(i)) {
                 playerPanels.get(i).enableMoveNewPieceButton();
             } else {
                 playerPanels.get(i).disableMoveNewPieceButton();
@@ -286,13 +296,13 @@ public class MainPanel extends JPanel implements YutNoriObserver {
 
     @Override
     public void onYutStateChanged() {
-        yutCountLabel.setText("남은 횟수: " + gm.getCurrentYutCount());
-        throwRandomYutButton.setEnabled(gm.getCurrentYutCount() > 0);
-        throwSelectYutButton.setEnabled(gm.getCurrentYutCount() > 0);
+        yutCountLabel.setText("남은 횟수: " + gameController.getCurrentYutCount());
+        throwRandomYutButton.setEnabled(yutController.canThrowYut());
+        throwSelectYutButton.setEnabled(yutController.canThrowYut());
         
         // 윷 족보 업데이트
         int index = 0;
-        java.util.List<Integer> yutResult = gm.getYutResult();
+        java.util.List<Integer> yutResult = gameController.getYutResult();
         for (int i = 0; i < Yut.values().length; i++) {
             if (yutResult.get(i) > 0) {
                 yutResultLabels.get(index).setText(Yut.values()[i].getKoreanName());
@@ -312,9 +322,8 @@ public class MainPanel extends JPanel implements YutNoriObserver {
         }
         
         // 새 말 출발 버튼 업데이트
-        int currentPlayer = gm.getCurrentPlayer();
         for (int i = 0; i < playerPanels.size(); i++) {
-            if (i == currentPlayer && gm.getReadyPiecesCount(i) > 0 && gm.getCurrentMoveCount() > 0) {
+            if (playerController.canMoveNewPiece(i)) {
                 playerPanels.get(i).enableMoveNewPieceButton();
             } else {
                 playerPanels.get(i).disableMoveNewPieceButton();

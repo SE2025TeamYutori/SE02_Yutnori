@@ -4,15 +4,15 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import org.cau02.model.GameManager;
+import org.cau02.controller.YutController;
 import org.cau02.model.Yut;
 
 public class YutSelectPanel extends JPanel {
-    private final GameManager gm;
+    private final YutController yutController;
     private final MainPanel mainPanel; // Swing MainPanel
 
-    public YutSelectPanel(GameManager gm, MainPanel mainPanel) {
-        this.gm = gm;
+    public YutSelectPanel(YutController yutController, MainPanel mainPanel) {
+        this.yutController = yutController;
         this.mainPanel = mainPanel;
 
         setLayout(new BorderLayout());
@@ -72,7 +72,7 @@ public class YutSelectPanel extends JPanel {
         circlePanel.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                gm.throwSelectedYut(yut);
+                yutController.throwSelectedYut(yut);
                 
                 // 다이얼로그 닫기
                 JDialog dialog = (JDialog) SwingUtilities.getWindowAncestor(YutSelectPanel.this);
